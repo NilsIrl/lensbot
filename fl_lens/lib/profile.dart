@@ -33,15 +33,24 @@ class AttributeData {
   Map<String, dynamic> toJson() => _$AttributeDataToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(fieldRename: FieldRename.snake)
 class ProfileMetaData {
 
-  ProfileMetaData();
+  ProfileMetaData({
+    required this.name,
+    required this.metadataId,
+    required this.bio,
+    required this.coverPicture,
+    required this.attributes,
+    required this.version,
+  });
 
   final MetaDataVersions version;
-  final String metadata_id;
+  final String metadataId;
   final String? name;
-  
+  final String? bio;
+  final String? coverPicture;
+  final List<AttributeData> attributes; // TODO: for bots, we will know in advance that there will be just one attribute (the bot's contract)
 
   factory ProfileMetaData.fromJson(Map<String, dynamic> json) => _$ProfileMetaDataFromJson(json);
 

@@ -28,3 +28,29 @@ const _$MetadataDisplayTypeEnumMap = {
   MetadataDisplayType.string: 'string',
   MetadataDisplayType.date: 'date',
 };
+
+ProfileMetaData _$ProfileMetaDataFromJson(Map<String, dynamic> json) =>
+    ProfileMetaData(
+      name: json['name'] as String?,
+      metadataId: json['metadata_id'] as String,
+      bio: json['bio'] as String?,
+      coverPicture: json['cover_picture'] as String?,
+      attributes: (json['attributes'] as List<dynamic>)
+          .map((e) => AttributeData.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      version: $enumDecode(_$MetaDataVersionsEnumMap, json['version']),
+    );
+
+Map<String, dynamic> _$ProfileMetaDataToJson(ProfileMetaData instance) =>
+    <String, dynamic>{
+      'version': _$MetaDataVersionsEnumMap[instance.version]!,
+      'metadata_id': instance.metadataId,
+      'name': instance.name,
+      'bio': instance.bio,
+      'cover_picture': instance.coverPicture,
+      'attributes': instance.attributes.map((e) => e.toJson()).toList(),
+    };
+
+const _$MetaDataVersionsEnumMap = {
+  MetaDataVersions.one: 'one',
+};
