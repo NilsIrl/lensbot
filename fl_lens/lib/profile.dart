@@ -39,24 +39,60 @@ class ProfileMetaData {
 
   ProfileMetaData({
     required this.name,
-    required this.metadataId,
+    this.metadataId,
     required this.bio,
-    required this.coverPicture,
+    this.coverPicture,
     required this.attributes,
-    required this.version,
+    this.version,
+    this.picture,
   });
 
-  final MetaDataVersions version;
-  final String metadataId;
+  final MetaDataVersions? version;
+  final String ?metadataId;
   final String? name;
   final String? bio;
   final String? coverPicture;
+  final ProfilePicture? picture;
   final List<AttributeData> attributes; // TODO: for bots, we will know in advance that there will be just one attribute (the bot's contract)
 
   factory ProfileMetaData.fromJson(Map<String, dynamic> json) => _$ProfileMetaDataFromJson(json);
 
   Map<String, dynamic> toJson() => _$ProfileMetaDataToJson(this);
+
+  @override
+  String toString() {
+    return 'ProfileMetaData{version: $version, metadataId: $metadataId, name: $name, bio: $bio, coverPicture: $coverPicture, attributes: $attributes}';
+  }
 }
+
+@JsonSerializable()
+class Picture {
+  const Picture({
+    required this.url,
+    required this.mimeType,
+  });
+
+  final String? url;
+  final String? mimeType;
+
+  factory Picture.fromJson(Map<String, dynamic> json) => _$PictureFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PictureToJson(this);
+}
+
+@JsonSerializable()
+class ProfilePicture {
+  const ProfilePicture({
+    required this.original,
+  });
+
+  final Picture? original;
+
+  factory ProfilePicture.fromJson(Map<String, dynamic> json) => _$ProfilePictureFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ProfilePictureToJson(this);
+}
+
 
 
 class ProfilePage extends StatelessWidget {
@@ -70,6 +106,7 @@ class ProfilePage extends StatelessWidget {
     return FutureBuilder(
       future: profile,
       builder: (context, future) {
+        print(future);
         if (future.hasData) {
           final profile = future.data;
           if (profile == null) {
@@ -82,7 +119,7 @@ class ProfilePage extends StatelessWidget {
           ],
         );
         } else {
-          return const CircularProgressIndicator();
+          return const Center(child: CircularProgressIndicator());
         }
       }
     );

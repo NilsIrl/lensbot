@@ -20,35 +20,35 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return VRouter(
       routes: [
-        VWidget(
-          path: '/',
-          widget: const HomePage(),
-          stackedRoutes: [
-            VWidget(
-              path: '/profile/:id',
-              widget: const ProfilePage(),
-            ),
-            VWidget(
-              path: '/game',
-              widget: const GamePage(),
-            ),
-          ],
-        ),
-        // VNester(
-        //   path: null,
-        //   widgetBuilder: (child) => PageOutline(child: child),
-        //   nestedRoutes: [
-        //     VWidget(path: "/home/", widget: const HomePage()),
+        // VWidget(
+        //   path: '/',
+        //   widget: const HomePage(),
+        //   stackedRoutes: [
         //     VWidget(
-        //       path: "/profile/:id",
+        //       path: '/profile/:id',
         //       widget: const ProfilePage(),
         //     ),
         //     VWidget(
-        //       path: "/game/:gameid",
+        //       path: '/game',
         //       widget: const GamePage(),
         //     ),
         //   ],
         // ),
+        VNester(
+          path: null,
+          widgetBuilder: (child) => PageOutline(child: child),
+          nestedRoutes: [
+            VWidget(path: "/", widget: const HomePage()),
+            VWidget(
+              path: "/profile/:id",
+              widget: const ProfilePage(),
+            ),
+            VWidget(
+              path: "/game/:gameid",
+              widget: const GamePage(),
+            ),
+          ],
+        ),
       ],
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -107,38 +107,35 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("hi");
-    return PageOutline(
-      child: Center(
-        child: Column(
-          children: [
-            const Text(
-              "Welcome to Lens Bot!",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+    return Center(
+      child: Column(
+        children: [
+          const Text(
+            "Welcome to Lens Bot!",
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
             ),
-            const Text(
-              "Lens Bot is a bot that can play games for you!",
-              style: TextStyle(
-                fontSize: 18,
-              ),
+          ),
+          const Text(
+            "Lens Bot is a bot that can play games for you!",
+            style: TextStyle(
+              fontSize: 18,
             ),
-            const Text(
-              "To get started, sign in with your Google account.",
-              style: TextStyle(
-                fontSize: 18,
-              ),
+          ),
+          const Text(
+            "To get started, sign in with your Google account.",
+            style: TextStyle(
+              fontSize: 18,
             ),
-            ElevatedButton(
-              onPressed: () {
-                context.vRouter.to("/profile/0x5303");
-              },
-              child: const Text("Sign In",),
-            ),
-          ],
-        ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              context.vRouter.to("/profile/0x5303");
+            },
+            child: const Text("Sign In",),
+          ),
+        ],
       ),
     );
   }
