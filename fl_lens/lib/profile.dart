@@ -30,8 +30,13 @@ class AttributeData {
   final String key;
 
   factory AttributeData.fromJson(Map<String, dynamic> json) => _$AttributeDataFromJson(json);
-
+  
   Map<String, dynamic> toJson() => _$AttributeDataToJson(this);
+
+  @override
+  String toString() {
+    return 'AttributeData(displayType: $displayType, traitType: $traitType, value: $value, key: $key)';
+  }
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
@@ -61,8 +66,8 @@ class ProfileMetaData {
 
   @override
   String toString() {
-    return 'ProfileMetaData{version: $version, metadataId: $metadataId, name: $name, bio: $bio, coverPicture: $coverPicture, attributes: $attributes}';
-  }
+    return 'ProfileMetaData(version: $version, metadataId: $metadataId, name: $name, bio: $bio, coverPicture: $coverPicture, picture: $picture, attributes: $attributes)';
+    }
 }
 
 @JsonSerializable()
@@ -78,6 +83,11 @@ class Picture {
   factory Picture.fromJson(Map<String, dynamic> json) => _$PictureFromJson(json);
 
   Map<String, dynamic> toJson() => _$PictureToJson(this);
+
+  @override
+  String toString() {
+    return 'Picture(url: $url, mimeType: $mimeType)';
+  }
 }
 
 @JsonSerializable()
@@ -91,6 +101,11 @@ class ProfilePicture {
   factory ProfilePicture.fromJson(Map<String, dynamic> json) => _$ProfilePictureFromJson(json);
 
   Map<String, dynamic> toJson() => _$ProfilePictureToJson(this);
+
+  @override
+  String toString() {
+    return 'ProfilePicture(original: $original)';
+  }
 }
 
 
@@ -116,6 +131,7 @@ class ProfilePage extends StatelessWidget {
           children: [
             Text(profile.name ?? 'No name'),
             Text(profile.bio ?? 'No bio'),
+            Image.network(profile.picture?.original?.url ?? ''),
           ],
         );
         } else {
