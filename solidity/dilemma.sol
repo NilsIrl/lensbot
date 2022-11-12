@@ -1,3 +1,7 @@
+pragma solidity ^0.8.17;
+
+import "./code.sol";
+
 contract Dilemma is Challenge {
     mapping (address => int256) public scores;
     mapping (address => mapping (address => bool[])) public plays;
