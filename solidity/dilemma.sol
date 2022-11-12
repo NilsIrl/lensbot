@@ -93,5 +93,7 @@ abstract contract Bot {
         return ownerprofile;
     }
 
+    // true is defect
+    // false is cooperate
     function play(address opponent, bool[] calldata previous_plays, uint256 turn_count) external virtual returns (bool);
 }
