@@ -3,43 +3,43 @@ pragma solidity ^0.8.17;
 import "./dilemma.sol";
 
 contract AlwaysCooperate is Bot {
-    uint256 ownerprofile;
-
-    constructor(uint256 owner_profile) {
-        ownerprofile = owner_profile;
-    }
-
-    function register_on(address challenge_address) external {
-        Challenge c = Challenge(challenge_address);
-        c.register();
-    }
-
-    function play(address opponent, bool[] calldata previous_plays, uint256 turn_count) external returns (bool) {
+    constructor(uint256 owner_profile) Bot (owner_profile) {}
+    
+    function play(address opponent, bool[] calldata previous_plays, uint256 turn_count) external override returns (bool) {
         return false;
-    }
-
-    function getOwnerprofile() view external returns (uint256) {
-        return ownerprofile;
     }
 }
 
+
 contract AlwaysDefect is Bot {
-    uint256 ownerprofile;
+    constructor(uint256 owner_profile) Bot (owner_profile) {}
 
-    constructor(uint256 owner_profile) {
-        ownerprofile = owner_profile;
-    }
-
-    function register_on(address challenge_address) external {
-        Challenge c = Challenge(challenge_address);
-        c.register();
-    }
-
-    function play(address opponent, bool[] calldata previous_plays, uint256 turn_count) external returns (bool) {
+    function play(address opponent, bool[] calldata previous_plays, uint256 turn_count) external override returns (bool) {
         return true;
     }
+}
 
-    function getOwnerprofile() view external returns (uint256) {
-        return ownerprofile;
+contract Toggle is Bot {
+    constructor(uint256 owner_profile) Bot (owner_profile) {}
+
+    function play(
+        address opponent,
+        bool[] calldata previous_plays,
+        uint256 turn_count) external override returns (bool) {
+            return turn_count % 2 == 0;
+    }
+}
+
+contract TitForTat is Bot {
+    constructor(uint256 owner_profile) Bot (owner_profile) {}
+
+    function play(
+        address opponent,
+        bool[] calldata previous_plays,
+        uint256 turn_count) external override returns (bool) {
+            if (previous_plays.length == 0) {
+                return false;
+            }
+            return previous_plays[previous_plays.length - 1];
     }
 }
