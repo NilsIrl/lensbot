@@ -18,7 +18,38 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return VRouter(
+      routes: [
+        VWidget(
+          path: '/',
+          widget: const HomePage(),
+          stackedRoutes: [
+            VWidget(
+              path: '/profile/:id',
+              widget: const ProfilePage(),
+            ),
+            VWidget(
+              path: '/game',
+              widget: const GamePage(),
+            ),
+          ],
+        ),
+        // VNester(
+        //   path: null,
+        //   widgetBuilder: (child) => PageOutline(child: child),
+        //   nestedRoutes: [
+        //     VWidget(path: "/home/", widget: const HomePage()),
+        //     VWidget(
+        //       path: "/profile/:id",
+        //       widget: const ProfilePage(),
+        //     ),
+        //     VWidget(
+        //       path: "/game/:gameid",
+        //       widget: const GamePage(),
+        //     ),
+        //   ],
+        // ),
+      ],
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -29,25 +60,6 @@ class MyApp extends StatelessWidget {
         ),
       ),
       title: 'Flutter Demo',
-      home: PageOutline(
-
-        child: VRouter(
-          routes: [
-            VWidget(
-              path: "/",
-              widget: Container(color: Colors.red),
-            ),
-            VWidget(
-              path: "/profile/",
-              widget: const ProfilePage(),
-            ),
-            VWidget(
-              path: "/game/:gameid",
-              widget: const GamePage(),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -85,7 +97,7 @@ class PageOutline extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(),
+      body: child,
     );
   }
 }
@@ -95,38 +107,38 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.expand(
-      child: Column(
-        children: [
-          const SizedBox(height: 20),
-          const Text(
-            "Welcome to Lens Bot!",
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+    print("hi");
+    return PageOutline(
+      child: Center(
+        child: Column(
+          children: [
+            const Text(
+              "Welcome to Lens Bot!",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            "Lens Bot is a bot that can play games for you!",
-            style: TextStyle(
-              fontSize: 18,
+            const Text(
+              "Lens Bot is a bot that can play games for you!",
+              style: TextStyle(
+                fontSize: 18,
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            "To get started, sign in with your Google account.",
-            style: TextStyle(
-              fontSize: 18,
+            const Text(
+              "To get started, sign in with your Google account.",
+              style: TextStyle(
+                fontSize: 18,
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {},
-            child: const Text("Sign In"),
-          ),
-        
-        ],
+            ElevatedButton(
+              onPressed: () {
+                context.vRouter.to("/profile/0x5303");
+              },
+              child: const Text("Sign In",),
+            ),
+          ],
+        ),
       ),
     );
   }

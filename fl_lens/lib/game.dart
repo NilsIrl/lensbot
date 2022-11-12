@@ -1,5 +1,4 @@
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter/material.dart';
 
 class GamePage extends StatelessWidget {
   const GamePage({super.key});
@@ -9,3 +8,5 @@ class GamePage extends StatelessWidget {
     return const Placeholder();
   }
 }
+
+// 0x5303

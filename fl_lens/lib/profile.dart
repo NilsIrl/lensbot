@@ -2,7 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
-
+import 'package:vrouter/vrouter.dart';
+import 'networking.dart';
 part 'profile.g.dart';
 
 @JsonEnum()
@@ -63,6 +64,27 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final params = VRouter.of(context).pathParameters;
+    final id = params['id'];
+    final profile = Networking.getProfileFromId(id!);
+    return FutureBuilder(
+      future: profile,
+      builder: (context, future) {
+        if (future.hasData) {
+          final profile = future.data;
+          if (profile == null) {
+            return const Text("Profile not found");
+          }
+          return Column(
+          children: [
+            Text(profile.name ?? 'No name'),
+            Text(profile.bio ?? 'No bio'),
+          ],
+        );
+        } else {
+          return const CircularProgressIndicator();
+        }
+      }
+    );
   }
 }
