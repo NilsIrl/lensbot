@@ -38,6 +38,7 @@ dependencies:
   vrouter: ^1.2.1
   provider: ^6.0.4
   json_annotation: ^4.7.0
+  graphql: ^5.1.1
 
 dev_dependencies:
   flutter_test:

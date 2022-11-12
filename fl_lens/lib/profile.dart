@@ -33,6 +33,22 @@ class AttributeData {
   Map<String, dynamic> toJson() => _$AttributeDataToJson(this);
 }
 
+@JsonSerializable()
+class ProfileMetaData {
+
+  ProfileMetaData();
+
+  final MetaDataVersions version;
+  final String metadata_id;
+  final String? name;
+  
+
+  factory ProfileMetaData.fromJson(Map<String, dynamic> json) => _$ProfileMetaDataFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ProfileMetaDataToJson(this);
+}
+
+
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
