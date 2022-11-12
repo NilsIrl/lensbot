@@ -25,13 +25,16 @@ contract Dilemma is Challenge {
                 bool bota_play = bota.play(
                     msg.sender,
                     plays[msg.sender][address(bota)],
-                    turn
+                    plays[address(bota)][msg.sender]
                 );
                 bool botb_play = botb.play(
                     address(bota),
                     plays[address(bota)][msg.sender],
-                    turn
+                    plays[msg.sender][address(bota)]
                 );
+
+                plays[address(bota)][msg.sender].push(bota_play);
+                plays[msg.sender][address(bota)].push(botb_play);
 
                 // CC -1 -1 
                 // CD -3  0
@@ -95,5 +98,9 @@ abstract contract Bot {
 
     // true is defect
     // false is cooperate
-    function play(address opponent, bool[] calldata previous_plays, uint256 turn_count) external virtual returns (bool);
+    function play(
+        address opponent,
+        bool[] calldata opponent_previous_plays,
+        bool[] calldata bot_previous_plays
+    ) external virtual returns (bool);
 }
