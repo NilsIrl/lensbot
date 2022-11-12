@@ -1,7 +1,10 @@
+import 'package:fl_lens/challenge.dart';
 import 'package:fl_lens/game.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:vrouter/vrouter.dart';
 import 'profile.dart';
+import 'state.dart' as s;
 
 const lime = Color(0xffabfe2c);
 
@@ -18,48 +21,43 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return VRouter(
-      routes: [
-        // VWidget(
-        //   path: '/',
-        //   widget: const HomePage(),
-        //   stackedRoutes: [
-        //     VWidget(
-        //       path: '/profile/:id',
-        //       widget: const ProfilePage(),
-        //     ),
-        //     VWidget(
-        //       path: '/game',
-        //       widget: const GamePage(),
-        //     ),
-        //   ],
-        // ),
-        VNester(
-          path: null,
-          widgetBuilder: (child) => PageOutline(child: child),
-          nestedRoutes: [
-            VWidget(path: "/", widget: const HomePage()),
-            VWidget(
-              path: "/profile/:id",
-              widget: const ProfilePage(),
-            ),
-            VWidget(
-              path: "/game/:gameid",
-              widget: const GamePage(),
-            ),
-          ],
-        ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => s.State()),
       ],
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ButtonStyle(
-            backgroundColor: Colors.green.prop(),
-            foregroundColor: Colors.white.prop(),
+      child: VRouter(
+        routes: [
+          VNester(
+            path: null,
+            widgetBuilder: (child) => PageOutline(child: child),
+            nestedRoutes: [
+              VWidget(path: "/", widget: const HomePage()),
+              VWidget(
+                path: "/profile/:id",
+                widget: const ProfilePage(),
+              ),
+              VWidget(
+                path: "/game/:gameid",
+                widget: const GamePage(),
+              ),
+              VWidget(
+                path: "/challenges",
+                widget: const ChallengePage(),
+              ),
+            ],
+          ),
+        ],
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ButtonStyle(
+              backgroundColor: Colors.green.prop(),
+              foregroundColor: Colors.white.prop(),
+            ),
           ),
         ),
+        title: 'Flutter Demo',
       ),
-      title: 'Flutter Demo',
     );
   }
 }
@@ -89,7 +87,9 @@ class PageOutline extends StatelessWidget {
           Row(
             children: [
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  context.read<s.State>().signIn();
+                },
                 child: const Text("Sign In"),
               ),
               const SizedBox(width: 10),
@@ -133,7 +133,9 @@ class HomePage extends StatelessWidget {
             onPressed: () {
               context.vRouter.to("/profile/0x5303");
             },
-            child: const Text("Sign In",),
+            child: const Text(
+              "Sign In",
+            ),
           ),
         ],
       ),

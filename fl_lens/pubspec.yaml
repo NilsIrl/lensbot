@@ -40,6 +40,8 @@ dependencies:
   json_annotation: ^4.7.0
   graphql: ^5.1.1
   graphql_flutter: ^5.1.0
+  # metamask: ^0.0.2
+  flutter_web3: ^2.1.9
 
 dev_dependencies:
   flutter_test:
