@@ -41,6 +41,9 @@
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter.js" defer></script>
 
+  <script src="https://cdn.ethers.io/lib/ethers-5.0.umd.min.js" type="text/javascript">
+  </script>
+
 </head>
 <body>
   <script>
@@ -57,6 +60,18 @@
         }
       });
     });
+    </script>
+    <script type="module">
+    import { ethers } from "/ethers-5.2.esm.min.js";
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+
+    function getTypedSignature(domain, types, value) {
+      return (window.result = signer._signTypedData(domain, types, value));
+    }
+
+    window.getTypedSignature = getTypedSignature;
   </script>
 </body>
 </html>

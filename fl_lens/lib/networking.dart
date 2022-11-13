@@ -1,10 +1,115 @@
 import 'package:fl_lens/profile.dart';
 import 'package:graphql/client.dart';
+import 'dart:js';
 
 class Networking {
   static const apilink = "https://api-mumbai.lens.dev/";
-  static List<ProfileMetaData> getProfiles() {
-    return [];
+  // static List<ProfileMetaData> getProfiles() {
+  //   return [];
+  // }
+
+  static Future<String> getDefaultProfile(String addr) {
+    final link = HttpLink(apilink);
+    final client = GraphQLClient(
+      cache: GraphQLCache(),
+      link: link,
+    );
+
+    final query = gql('''
+      query DefaultProfile {
+        defaultProfile(request: { ethereumAddress: "$addr"}) {
+          id
+        }
+      }
+      ''');
+
+    final result = client.query(QueryOptions(document: query));
+
+    return result.then((value) => value.data!['defaultProfile']['id']);
+  }
+
+  static void publish(String jwt, String profile, String uri) async {
+    final link = HttpLink(uri, defaultHeaders: {
+      'x-access-token': jwt,
+    });
+    final client = GraphQLClient(
+      cache: GraphQLCache(),
+      link: link,
+    );
+
+    final mutation = gql('''
+      mutation CreatePostTypedData {
+        createPostTypedData(request: {
+          profileId: "$profile",
+          contentURI: "$uri",
+          collectModule: {
+            revertCollectModule: true
+          },
+          referenceModule: {
+            followerOnlyReferenceModule: false
+          }
+        }) {
+          id
+          expiresAt
+          typedData {
+            types {
+              PostWithSig {
+                name
+                type
+              }
+            }
+            domain {
+              name
+              chainId
+              version
+              verifyingContract
+            }
+            value {
+              nonce
+              deadline
+              profileId
+              contentURI
+              collectModule
+              collectModuleInitData
+              referenceModule
+              referenceModuleInitData
+            }
+          }
+        }
+      }
+      ''');
+
+    final result = await client
+        .mutate(MutationOptions(document: mutation))
+        .then((value) => value.data!);
+    final typedData = result['createPostTypedData']['typedData'];
+    final id = await result['createPostTypedData']['id'];
+    final signedTypedData = await context.callMethod('getTypedSignature',
+        [typedData['domain'], typedData['types'], typedData['value']]);
+
+    final mutation2 = gql(r'''
+      mutation Broadcast($request: BroadcastRequest!) {
+              broadcast(request: $request) {
+                  ... on RelayerResult {
+                      txHash
+              txId
+                  }
+                  ... on RelayError {
+                      reason
+                  }
+              }
+          }
+    ''');
+
+    final result2 =
+        await client.mutate(MutationOptions(document: mutation2, variables: {
+      'request': {
+        'id': id,
+        'signature': signedTypedData,
+      }
+    }));
+
+    print(result2);
   }
 
   static Future<String> getLoginToken(String addr) {

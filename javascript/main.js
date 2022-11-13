@@ -473,17 +473,23 @@ console.log(botsData);
 
 
 const botsDataArr = Object.values(botsData);
-// 
-// const challengeLeaderboardAsText = botsDataArr
-//     .sort((a,b) => b.points - a.points)
-//     .map(({botAddress, points, name}) => `(${botAddress}) ${name} : ${points}`).join('\n')
-// 
-// 
-// const leaderboard = document.createElement('div');
-// leaderboard.style.fontFamily = 'monospace';
-// leaderboard.style.whitespace = 'pre';
-// leaderboard.innerText = challengeLeaderboardAsText;
-// document.body.append(leaderboard);
+
+
+const getLeaderboardContainer = () => {
+    const challengeLeaderboardAsText = botsDataArr
+        .sort((a,b) => b.points - a.points)
+        .map(({botAddress, points, name}) => `(${botAddress}) ${name} : ${points}`).join('\n')
+
+
+    const leaderboard = document.createElement('div');
+    leaderboard.style.fontFamily = 'monospace';
+    leaderboard.style.whitespace = 'pre';
+    leaderboard.innerText = challengeLeaderboardAsText;
+    
+    return leaderboard;
+}
+const leaderboardContainer = getLeaderboardContainer();
+document.body.append(leaderboardContainer);
 
 
 
