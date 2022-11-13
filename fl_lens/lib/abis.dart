@@ -79,6 +79,19 @@ final challenge = Interface("""
     },
     {
         "inputs": [],
+        "name": "getName",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
         "name": "getOwnerprofile",
         "outputs": [
             {
@@ -121,6 +134,19 @@ final challenge = Interface("""
 final bot = Interface("""[
     {
         "inputs": [],
+        "name": "getName",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
         "name": "getOwnerprofile",
         "outputs": [
             {
@@ -141,13 +167,13 @@ final bot = Interface("""[
             },
             {
                 "internalType": "bool[]",
-                "name": "previous_plays",
+                "name": "opponent_previous_plays",
                 "type": "bool[]"
             },
             {
-                "internalType": "uint256",
-                "name": "turn_count",
-                "type": "uint256"
+                "internalType": "bool[]",
+                "name": "bot_previous_plays",
+                "type": "bool[]"
             }
         ],
         "name": "play",
@@ -158,6 +184,19 @@ final bot = Interface("""[
                 "type": "bool"
             }
         ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "challenge_address",
+                "type": "address"
+            }
+        ],
+        "name": "register_on",
+        "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
     }

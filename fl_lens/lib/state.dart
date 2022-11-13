@@ -2,13 +2,6 @@ import 'package:fl_lens/abis.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web3/flutter_web3.dart';
 
-class Tuple2<T,U> {
-    T first;
-    U second;
-    Tuple2(this.first, this.second);
-}
-
-
 class State with ChangeNotifier {
   static const lensbotAddr = "0x5bf4dfe318901DCacFD2986BA2c8a58389AaFc86";
 
@@ -36,7 +29,7 @@ class State with ChangeNotifier {
     }
   }
 
-  dynamic getContract() {
+  dynamic getLensBotContract() {
     // final provider2 = JsonRpcProvider(
     //   "https://rpc-mumbai.maticvigil.com",
     // );
@@ -48,8 +41,17 @@ class State with ChangeNotifier {
     return c;
   }
 
+  dynamic getChallengeContract(String addr) {
+    final c = Contract(
+      addr,
+      challenge,
+      provider,
+    );
+    return c;
+  }
+
   // Future<int> getChallengesCount() async {
-  //   final c = getContract();
+  //   final c = getLensBotContract();
   //   print(c);
   //   final res = await c.call<int>("getChallengesCount");
   //   print("challenges count: $res");
@@ -57,7 +59,7 @@ class State with ChangeNotifier {
   // }
 
   // Future<List<BigInt>> getChallengeOwnerIDs() async {
-  //   final c = getContract();
+  //   final c = getLensBotContract();
   //   print("before");
   //   final BigInt count = await c.call<BigInt>("getChallengesCount");
   //   print(count);

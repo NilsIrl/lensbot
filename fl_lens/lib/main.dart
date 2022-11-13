@@ -42,8 +42,10 @@ class MyApp extends StatelessWidget {
               ),
               VWidget(
                 path: "/challenges/",
-                widget: const ChallengePage(),
+                widget: const ChallengesPage(),
               ),
+              VWidget(path: 
+              "/challenge/:id", widget: const ChallengePage())
             ],
           ),
         ],

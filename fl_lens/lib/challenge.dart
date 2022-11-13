@@ -2,33 +2,35 @@ import 'package:fl_lens/abis.dart';
 import 'package:fl_lens/networking.dart';
 import 'package:fl_lens/profile.dart';
 import 'package:flutter_web3/flutter_web3.dart';
+import 'package:vrouter/vrouter.dart';
 
 import 'state.dart' as s;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ChallengePage extends StatefulWidget {
-  const ChallengePage({super.key});
+class ChallengesPage extends StatefulWidget {
+  const ChallengesPage({super.key});
 
   @override
-  State<ChallengePage> createState() => _ChallengePageState();
+  State<ChallengesPage> createState() => _ChallengesPageState();
 }
 
-class _ChallengePageState extends State<ChallengePage> {
+class _ChallengesPageState extends State<ChallengesPage> {
   void f(BuildContext context) async {
     final s.State state = context.watch<s.State>();
-    final c = state.getContract();
+    final c = state.getLensBotContract();
     final BigInt count = await c.call<BigInt>("getChallengesCount");
 
     for (int i = 0; i < count.toInt(); i++) {
-      final challenge_addr = await c.call<String>("challenges", [i]);
-      final contract = Contract(challenge_addr, challenge, provider);
+      final challengeAddr = await c.call<String>("challenges", [i]);
+      final contract = Contract(challengeAddr, challenge, provider);
       final ownerId = await contract.call<BigInt>("getOwnerprofile");
+      final name = await contract.call<String>("getName");
       ownerIds.add(ownerId);
-      challengeAddrs.add(challenge_addr);
+      challengeAddrs.add(challengeAddr);
+      names.add(name);
     }
     setState(() {});
-    // context.read<s.State>().update();
   }
 
   @override
@@ -39,38 +41,72 @@ class _ChallengePageState extends State<ChallengePage> {
 
   List<BigInt> ownerIds = [];
   List<String> challengeAddrs = [];
+  List<String> names = [];
 
   @override
   Widget build(BuildContext context) {
-    print(ownerIds.length);
-
-    return ListView.builder(
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 600, childAspectRatio: 2.5 / 1),
       itemCount: ownerIds.length,
       itemBuilder: (context, index) {
         final profile = Networking.getProfileFromId(
             "0x" + ownerIds[index].toRadixString(16));
-          return ProfileFutureCard(profile: profile, );
-        // return FutureBuilder(
-        //     future: profile,
-        //     builder: (context, future) {
-        //       print(future);
-        //       if (future.hasData) {
-        //         final profile = future.data;
-        //         if (profile == null) {
-        //           return const Text("Profile not found");
-        //         }
-        //         return Column(
-        //           children: [
-        //             Text(profile.name ?? 'No name'),
-        //             Text(profile.bio ?? 'No bio'),
-        //             Image.network(profile.picture?.original?.url ?? ''),
-        //           ],
-        //         );
-        //       } else {
-        //         return const Center(child: CircularProgressIndicator());
-        //       }
-        //     });
+        return ProfileFutureCard(
+          profile: profile,
+          addr: challengeAddrs[index],
+          name: names[index],
+          onClick: () => VRouter.of(context).to(
+            "/challenge/${challengeAddrs[index]}",          ),
+        );
       },
     );
+  }
+}
+
+
+class ChallengePage extends StatefulWidget {
+  const ChallengePage({super.key});
+
+  @override
+  State<ChallengePage> createState() => _ChallengePageState();
+}
+
+class _ChallengePageState extends State<ChallengePage> {
+  _ChallengePageState();
+
+  late String id; 
+
+  void f(BuildContext context) async {
+    final s.State state = context.watch<s.State>();
+    final c = state.getChallengeContract(id);
+    final name = await c.call<String>("getName");
+    // final desc = await c.call<String>("getDescription");
+    // final BigInt count = await c.call<BigInt>("getChallengesCount");
+
+    // for (int i = 0; i < count.toInt(); i++) {
+    //   final challengeAddr = await c.call<String>("challenges", [i]);
+    //   final contract = Contract(challengeAddr, challenge, provider);
+    //   final ownerId = await contract.call<BigInt>("getOwnerprofile");
+    //   final name = await contract.call<String>("getName");
+    //   ownerIds.add(ownerId);
+    //   challengeAddrs.add(challengeAddr);
+    //   names.add(name);
+    // }
+    setState(() {});
+  }
+
+  @override
+  void didChangeDependencies() {
+    f(context);
+    final id = VRouter.of(context).pathParameters["id"];
+    super.didChangeDependencies();
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    // final contract = Contract() ;
+
+    return const Placeholder();
   }
 }
