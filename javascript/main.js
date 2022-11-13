@@ -463,20 +463,49 @@ const getDataForAllBotsInChallenge = async (challengeContract, botAddresses) => 
 // debugger
 
 
-const botsData = await getDataForAllBotsInChallenge(challengeContract, botAddresses);
-
-console.log(botsData);
 
 
-const botsDataArr = Object.values(botsData);
-
-const challengeLeaderboardAsText = botsDataArr
-    .sort((a,b) => b.points - a.points)
-    .map(({botAddress, points, name}) => `(${botAddress}) ${name} : ${points}`).join('\n')
 
 
-const leaderboard = document.createElement('div');
-leaderboard.style.fontFamily = 'monospace';
-leaderboard.style.whitespace = 'pre';
-leaderboard.innerText = challengeLeaderboardAsText;
-document.body.append(leaderboard);
+// const botsData = await getDataForAllBotsInChallenge(challengeContract, botAddresses);
+// 
+// console.log(botsData);
+// 
+// 
+// const botsDataArr = Object.values(botsData);
+// 
+// const challengeLeaderboardAsText = botsDataArr
+//     .sort((a,b) => b.points - a.points)
+//     .map(({botAddress, points, name}) => `(${botAddress}) ${name} : ${points}`).join('\n')
+// 
+// 
+// const leaderboard = document.createElement('div');
+// leaderboard.style.fontFamily = 'monospace';
+// leaderboard.style.whitespace = 'pre';
+// leaderboard.innerText = challengeLeaderboardAsText;
+// document.body.append(leaderboard);
+
+
+
+function displayGameMatrixForChallenge (challengeContract) {
+    const roundLength = 
+    for (let i = 0; i < botAddresses.length; i++) {
+        const botAddress = botAddresses[i];
+        
+        const botContract = new ethers.Contract(botAddress, botABI, provider);
+        
+        const pointsBigNumber = await challengeContract.getPoints(botAddress);
+        const points = pointsBigNumber.toNumber();
+        const name = await botContract.getName();
+        
+        botsData[botAddress] = {
+            botAddress,
+            botContract,
+            points,
+            name,
+        };
+    }
+}
+
+debugger
+displayGameMatrixForChallenge(challengeContract)
