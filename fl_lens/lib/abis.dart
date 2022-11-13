@@ -131,7 +131,7 @@ final challengeABI = Interface("""
     }
 ]
 """);
-final BotABI = Interface("""[
+final botABI = Interface("""[
     {
         "inputs": [],
         "name": "getName",

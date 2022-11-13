@@ -4,7 +4,7 @@ import 'package:flutter_web3/flutter_web3.dart';
 import 'networking.dart';
 
 class State with ChangeNotifier {
-  static const lensBotABIAddr = "0x5bf4dfe318901DCacFD2986BA2c8a58389AaFc86";
+  static const lensBotABIAddr = "0x3F359353554fe20a199BB803F87454075dEc8Cca";
 
   State() : super();
 
@@ -51,6 +51,15 @@ class State with ChangeNotifier {
     final c = Contract(
       addr,
       challengeABI,
+      provider,
+    );
+    return c;
+  }
+
+  dynamic getBotContract(String addr) {
+    final c = Contract(
+      addr,
+      botABI,
       provider,
     );
     return c;

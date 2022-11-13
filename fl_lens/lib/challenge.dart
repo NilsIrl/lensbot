@@ -1,4 +1,5 @@
 import 'package:fl_lens/abis.dart';
+import 'package:fl_lens/main.dart';
 import 'package:fl_lens/networking.dart';
 import 'package:fl_lens/profile.dart';
 import 'package:flutter_web3/flutter_web3.dart';
@@ -9,8 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class Challenge {
-  const Challenge(
-      {required this.id, required this.name, required this.ownerId, required this.bots,});
+  const Challenge({
+    required this.id,
+    required this.name,
+    required this.ownerId,
+    required this.bots,
+  });
 
   final String id;
   final String name;
@@ -61,7 +66,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
       itemCount: ownerIds.length,
       itemBuilder: (context, index) {
         final profile = Networking.getProfileFromId(
-            "0x" + ownerIds[index].toRadixString(16));
+            "0x${ownerIds[index].toRadixString(16)}");
         return ProfileFutureCard(
           profile: profile,
           addr: challengeAddrs[index],
@@ -75,19 +80,19 @@ class _ChallengesPageState extends State<ChallengesPage> {
   }
 }
 
-class ChallengePage extends StatefulWidget {
-  const ChallengePage({super.key});
-
-  @override
-  State<ChallengePage> createState() => _ChallengePageState();
-}
-
 class Bot {
   final String name;
   final String addr;
   final BigInt points;
 
   Bot({required this.name, required this.addr, required this.points});
+}
+
+class ChallengePage extends StatefulWidget {
+  const ChallengePage({super.key});
+
+  @override
+  State<ChallengePage> createState() => _ChallengePageState();
 }
 
 class _ChallengePageState extends State<ChallengePage> {
@@ -104,7 +109,7 @@ class _ChallengePageState extends State<ChallengePage> {
     var bots = <Bot>[];
     for (int i = 0; i < botCount.toInt(); i++) {
       final botAddr = await contract.call<String>("getLeaderboardAt", [i]);
-      final botContract = Contract(botAddr, BotABI, provider);
+      final botContract = state.getBotContract(botAddr);
       final botName = await botContract.call<String>("getName");
       final points = await contract.call<BigInt>("getPoints", [botAddr]);
       final bot = Bot(name: botName, addr: botAddr, points: points);
@@ -122,6 +127,7 @@ class _ChallengePageState extends State<ChallengePage> {
 
   @override
   void didChangeDependencies() {
+    print("change deps");
     final id = VRouter.of(context).pathParameters["id"];
     f(context, id!);
     super.didChangeDependencies();
@@ -129,18 +135,67 @@ class _ChallengePageState extends State<ChallengePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (challenge != null)
-    {return Column(
-      children: [
-        const Text("Challenge", style: const TextStyle(fontSize: 20),),
-        Text("Name: ${challenge?.name}"),
-        ProfileFutureCard(profile: Networking.getProfileFromId("0x" + challenge!.ownerId.toRadixString(16))),
-        Expanded(child: ListView.builder(itemBuilder: (context, index) {
-          final bot = challenge!.bots[index];
-          return Text("${bot.name} ${bot.points}");
-        }, itemCount: challenge!.bots.length,))
-      ],
-    );}
-    else {return const Center(child: CircularProgressIndicator());}
+    if (challenge != null) {
+      return Column(
+        children: [
+          Text(
+            "Challenge: ${challenge!.name}",
+            style: const TextStyle(fontSize: 20),
+          ),
+          ProfileFutureCard(
+              profile: Networking.getProfileFromId(
+            "0x${challenge!.ownerId.toRadixString(
+              16,
+            )}",
+          )),
+          Expanded(
+              child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 300, childAspectRatio: 2.5 / 1),
+            itemBuilder: (context, index) {
+              final bot = challenge!.bots[index];
+              return InkWell(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    color: lime,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Row(
+                        children: [
+                          Text(
+                            bot.name,
+                          ),
+                          const Spacer(),
+                          Text(
+                            "${bot.points}",
+                            style: const TextStyle(
+                              color: Colors.green,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                onTap: () {
+                  print("tapppppp");
+                  VRouter.of(context).to(
+                    "/challenge/${VRouter.of(context).pathParameters["id"]}/bot/${bot.addr}",
+                  );
+                },
+              );
+            },
+            itemCount: challenge!.bots.length,
+          ))
+        ],
+      );
+    } else {
+      return const Center(child: CircularProgressIndicator());
+    }
   }
 }

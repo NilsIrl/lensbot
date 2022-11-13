@@ -159,7 +159,6 @@ class Networking {
     return result.then((value) {
       final data = value.data!;
       final profile = ProfileMetaData.fromJson(data['profile']);
-      print(profile);
       return profile;
     });
   }

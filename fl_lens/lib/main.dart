@@ -1,3 +1,4 @@
+import 'package:fl_lens/bot.dart';
 import 'package:fl_lens/challenge.dart';
 import 'package:fl_lens/game.dart';
 import 'package:flutter/material.dart';
@@ -44,8 +45,14 @@ class MyApp extends StatelessWidget {
                 path: "/challenges/",
                 widget: const ChallengesPage(),
               ),
-              VWidget(path: 
-              "/challenge/:id", widget: const ChallengePage())
+              VWidget(
+                path: "/challenge/:id",
+                widget: const ChallengePage(),
+              ),
+              VWidget(
+                path: "/challenge/:id/bot/:botId",
+                widget: const BotPage(),
+              ),
             ],
           ),
         ],
@@ -131,7 +138,6 @@ class SiginInButton extends StatelessWidget {
     }
   }
 }
-
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
