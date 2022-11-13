@@ -15,12 +15,14 @@ class Challenge {
     required this.name,
     required this.ownerId,
     required this.bots,
+    required this.roundLength,
   });
 
   final String id;
   final String name;
   final BigInt ownerId;
   final List<Bot> bots;
+  final BigInt roundLength;
 }
 
 class ChallengesPage extends StatefulWidget {
@@ -100,11 +102,13 @@ class _ChallengePageState extends State<ChallengePage> {
 
   Challenge? challenge;
 
+
   void f(BuildContext context, String id) async {
     final s.State state = context.watch<s.State>();
     final contract = state.getChallengeContract(id);
     final ownerId = await contract.call<BigInt>("getOwnerprofile");
     final name = await contract.call<String>("getName");
+    final BigInt roundLength = await contract.call<BigInt>("getRoundLength");
     final botCount = await contract.call<BigInt>("getBotCount");
     var bots = <Bot>[];
     for (int i = 0; i < botCount.toInt(); i++) {
@@ -121,7 +125,11 @@ class _ChallengePageState extends State<ChallengePage> {
       name: name,
       ownerId: ownerId,
       bots: bots,
+      roundLength: roundLength
     );
+    
+    
+
     setState(() {});
   }
 
@@ -136,64 +144,108 @@ class _ChallengePageState extends State<ChallengePage> {
   @override
   Widget build(BuildContext context) {
     if (challenge != null) {
-      return Column(
-        children: [
-          Text(
-            "Challenge: ${challenge!.name}",
-            style: const TextStyle(fontSize: 20),
-          ),
-          ProfileFutureCard(
-              profile: Networking.getProfileFromId(
-            "0x${challenge!.ownerId.toRadixString(
-              16,
-            )}",
-          )),
-          Expanded(
-              child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 300, childAspectRatio: 2.5 / 1),
-            itemBuilder: (context, index) {
-              final bot = challenge!.bots[index];
-              return InkWell(
+      return GridView.builder(
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 300, childAspectRatio: 2.5 / 1),
+        itemBuilder: (context, index) {
+          final bot = challenge!.bots[index];
+          return InkWell(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                color: lime,
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    color: lime,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Row(
-                        children: [
-                          Text(
-                            bot.name,
-                          ),
-                          const Spacer(),
-                          Text(
-                            "${bot.points}",
-                            style: const TextStyle(
-                              color: Colors.green,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ],
+                  padding: const EdgeInsets.all(12.0),
+                  child: Row(
+                    children: [
+                      Text(
+                        bot.name,
                       ),
-                    ),
+                      const Spacer(),
+                      Text(
+                        "${bot.points}",
+                        style: const TextStyle(
+                          color: Colors.green,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                onTap: () {
-                  print("tapppppp");
-                  VRouter.of(context).to(
-                    "/challenge/${VRouter.of(context).pathParameters["id"]}/bot/${bot.addr}",
-                  );
-                },
+              ),
+            ),
+            onTap: () {
+              print("tapppppp");
+              VRouter.of(context).to(
+                "/challenge/${VRouter.of(context).pathParameters["id"]}/bot/${bot.addr}",
               );
             },
-            itemCount: challenge!.bots.length,
-          ))
-        ],
+          );
+        },
+        itemCount: challenge!.bots.length,
       );
+      // return Column(
+      //   children: [
+      //     Text(
+      //       "Challenge: ${challenge!.name}",
+      //       style: const TextStyle(fontSize: 20),
+      //     ),
+      //     ProfileFutureCard(
+      //         profile: Networking.getProfileFromId(
+      //       "0x${challenge!.ownerId.toRadixString(
+      //         16,
+      //       )}",
+      //     )),
+      //     Expanded(
+      //       child: GridView.builder(
+      //         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+      //             maxCrossAxisExtent: 300, childAspectRatio: 2.5 / 1),
+      //         itemBuilder: (context, index) {
+      //           final bot = challenge!.bots[index];
+      //           return InkWell(
+      //             child: Padding(
+      //               padding: const EdgeInsets.all(8.0),
+      //               child: Card(
+      //                 shape: RoundedRectangleBorder(
+      //                   borderRadius: BorderRadius.circular(20.0),
+      //                 ),
+      //                 color: lime,
+      //                 child: Padding(
+      //                   padding: const EdgeInsets.all(12.0),
+      //                   child: Row(
+      //                     children: [
+      //                       Text(
+      //                         bot.name,
+      //                       ),
+      //                       const Spacer(),
+      //                       Text(
+      //                         "${bot.points}",
+      //                         style: const TextStyle(
+      //                           color: Colors.green,
+      //                           fontSize: 18,
+      //                         ),
+      //                       ),
+      //                     ],
+      //                   ),
+      //                 ),
+      //               ),
+      //             ),
+      //             onTap: () {
+      //               print("tapppppp");
+      //               VRouter.of(context).to(
+      //                 "/challenge/${VRouter.of(context).pathParameters["id"]}/bot/${bot.addr}",
+      //               );
+      //             },
+      //           );
+      //         },
+      //         itemCount: challenge!.bots.length,
+      //       ),
+      //     ),
+      //   ],
+      // );
     } else {
       return const Center(child: CircularProgressIndicator());
     }
