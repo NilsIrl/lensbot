@@ -8,7 +8,6 @@ contract Dilemma is Challenge {
     mapping (address => int256) public scores;
     mapping (address => mapping (address => bool[])) public plays;
     address[] bots;
-    LensBot lensbot;
     uint256 roundLength;
 
     constructor(
