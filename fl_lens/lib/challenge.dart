@@ -63,8 +63,8 @@ class _ChallengesPageState extends State<ChallengesPage> {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 600, childAspectRatio: 2.5 / 1),
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 900, childAspectRatio: 2.8 / 1),
       itemCount: ownerIds.length,
       itemBuilder: (context, index) {
         final profile = Networking.getProfileFromId(

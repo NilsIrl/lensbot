@@ -20,6 +20,7 @@ class _BotPageState extends State<BotPage> {
   Bot? bot;
   List<List<List<bool>>>? playsArray;
   int? rank;
+  String? ownerId;
 
   void f(BuildContext context, String id, String botId) async {
     final s.State state = context.watch<s.State>();
@@ -52,8 +53,10 @@ class _BotPageState extends State<BotPage> {
       final game = <List<bool>>[];
       for (int j = 0; j < roundLength.toInt(); j++) {
         final round = <bool>[];
-        final p1 = await contract.call<bool>("plays", [botId, bots[i].addr, j]) as bool;
-        final p2 = await contract.call<bool>("plays", [bots[i].addr, botId, j]) as bool;
+        final p1 = await contract.call<bool>("plays", [botId, bots[i].addr, j])
+            as bool;
+        final p2 = await contract.call<bool>("plays", [bots[i].addr, botId, j])
+            as bool;
         round.addAll([p1, p2]);
         game.add(round);
       }
@@ -78,15 +81,22 @@ class _BotPageState extends State<BotPage> {
         child: Column(
           children: [
             const Text(
-              "Bot",
+              "\nBot",
               style: TextStyle(fontSize: 20),
             ),
-            Text("Name: ${challenge?.name}"),
-            SizedBox(
+            Text("Name: ${challenge?.name}\n"),
+            Center(
+              child: SizedBox(
                 height: 300,
+                width: 700,
                 child: ProfileFutureCard(
-                    profile: Networking.getProfileFromId(
-                        "0x${challenge!.ownerId.toRadixString(16)}"))),
+                  profile: Networking.getProfileFromId(
+                    "0x${challenge!.ownerId.toRadixString(16)}",
+                  ),
+                  addr: "0x${challenge!.ownerId.toRadixString(16)}",
+                ),
+              ),
+            ),
             Expanded(
               child: ArrayViewer(
                 challenge: challenge!,
@@ -153,7 +163,7 @@ class _ArrayViewerState extends State<ArrayViewer> {
                               height: 20,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: e[0] ? Colors.green : Colors.red,
+                                color: !e[0] ? Colors.green : Colors.red,
                               ),
                             ),
                             Container(
@@ -162,7 +172,7 @@ class _ArrayViewerState extends State<ArrayViewer> {
                               height: 20,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: e[1] ? Colors.green : Colors.red,
+                                color: !e[1] ? Colors.green : Colors.red,
                               ),
                             ),
                           ],
