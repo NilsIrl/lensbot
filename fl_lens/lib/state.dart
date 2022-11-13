@@ -12,6 +12,7 @@ class State with ChangeNotifier {
   late Web3Provider provider;
 
   bool get signedIn => acc != null;
+  String? jwtToken;
 
   void signIn() async {
     if (ethereum != null) {
@@ -26,6 +27,7 @@ class State with ChangeNotifier {
         final signer = provider.getSigner();
         final signedToken = await signer.signMessage(token);
         final jwt = await Networking.getJWT(acc, signedToken);
+        jwtToken = jwt;
         print(jwt);
       } on EthereumUserRejected {
         print('User rejected the modal');
