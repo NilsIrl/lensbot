@@ -2,31 +2,44 @@ import 'package:fl_lens/abis.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web3/flutter_web3.dart';
 
+class Tuple2<T,U> {
+    T first;
+    U second;
+    Tuple2(this.first, this.second);
+}
+
+
 class State with ChangeNotifier {
-  static const lensbotAddr = "0xEfB7C195AAcB0083e2a8fe60f8C5104dC5fC6BB2";
+  static const lensbotAddr = "0x5bf4dfe318901DCacFD2986BA2c8a58389AaFc86";
 
   State() : super();
 
-  LoginState? loginState;
   String? acc;
   late Web3Provider provider;
+
+  bool get signedIn => acc != null;
 
   void signIn() async {
     if (ethereum != null) {
       try {
         // Prompt user to connect to the provider, i.e. confirm the connection modal
         final accs = await ethereum!
-            .requestAccount(); // Get all accounts in node disposal
+           .requestAccount(); // Get all accounts in node disposal
         acc = accs[0]; // Get the first account
         provider = Web3Provider(ethereum!);
+
       } on EthereumUserRejected {
         print('User rejected the modal');
       }
+      print("logged in");
       notifyListeners();
     }
   }
 
   dynamic getContract() {
+    // final provider2 = JsonRpcProvider(
+    //   "https://rpc-mumbai.maticvigil.com",
+    // );
     final c = Contract(
       lensbotAddr,
       lensbot,
@@ -35,29 +48,33 @@ class State with ChangeNotifier {
     return c;
   }
 
-  Future<int> getChallengesCount() async {
-    final c = getContract();
-    final res = await c.call("getChallengesCount");
-    return res;
-  }
+  // Future<int> getChallengesCount() async {
+  //   final c = getContract();
+  //   print(c);
+  //   final res = await c.call<int>("getChallengesCount");
+  //   print("challenges count: $res");
+  //   return res;
+  // }
 
-  Future<dynamic> getChallenge(int id) async {
-    final c = getContract();
-    final res = await c.call("challenges", [id]);
-    return res;
-  }
+  // Future<List<BigInt>> getChallengeOwnerIDs() async {
+  //   final c = getContract();
+  //   print("before");
+  //   final BigInt count = await c.call<BigInt>("getChallengesCount");
+  //   print(count);
+  //   print("after");
+  //   var addrs = [];
+  //   for (int i = 0; i < count.toInt(); i++) {
+  //     final challenge_addr = await c.call("challenges", [i]);
+  //     final contract = Contract(challenge_addr, challenge, provider);
+  //     final ownerId = await contract.call<BigInt>("getOwnerprofile");
+  //     addrs.add(ownerId);
+  //   }
+  //   print("returning $addrs");
+  //   return Future.value(addrs.cast<String>());
+  // }
 
-  Future<List<String>> getChallengeOwnderIDs() async {
-    final c = getContract();
-    final count = await getChallengesCount();
-    var addrs = [];
-    for (int i = 0; i < count; i++) {
-      final challenge_addr = await getChallenge(i);
-      final contract = Contract(challenge_addr, challenge, provider);
-      final owner_id = await contract.call("getOwnerProfile");
-      addrs.add(owner_id);
-    }
-    return Future.value(addrs.cast<String>());
+  void update() {
+    notifyListeners();
   }
 }
 
