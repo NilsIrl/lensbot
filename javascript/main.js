@@ -379,7 +379,7 @@ const getChallengesAddress = async () => {
 const challengesAddresses = await getChallengesAddress();
 
 const challengeContracts = [];
-const challengeContract = new ethers.Contract(challengesAddresses[1], challengeABI, provider);
+const challengeContract = new ethers.Contract(challengesAddresses[0], challengeABI, provider);
 challengeContracts.push(challengeContract);
 
 // debugger
@@ -467,12 +467,12 @@ const getDataForAllBotsInChallenge = async (challengeContract, botAddresses) => 
 
 
 
-// const botsData = await getDataForAllBotsInChallenge(challengeContract, botAddresses);
-// 
-// console.log(botsData);
-// 
-// 
-// const botsDataArr = Object.values(botsData);
+const botsData = await getDataForAllBotsInChallenge(challengeContract, botAddresses);
+
+console.log(botsData);
+
+
+const botsDataArr = Object.values(botsData);
 // 
 // const challengeLeaderboardAsText = botsDataArr
 //     .sort((a,b) => b.points - a.points)
@@ -487,25 +487,39 @@ const getDataForAllBotsInChallenge = async (challengeContract, botAddresses) => 
 
 
 
-function displayGameMatrixForChallenge (challengeContract) {
-    const roundLength = 
-    for (let i = 0; i < botAddresses.length; i++) {
-        const botAddress = botAddresses[i];
+const getPlaysMatrixForChallenge = async (challengeContract, botsDataArr) => {
+    const roundLength = await challengeContract.getRoundLength();
+    
+    const plays = [];
+    
+    for (let i = 0; i < botsDataArr.length; i++) {
+        const bot1Data = botsDataArr[i];
         
-        const botContract = new ethers.Contract(botAddress, botABI, provider);
+        const playsForBot1 = [];
+        plays.push(playsForBot1);
         
-        const pointsBigNumber = await challengeContract.getPoints(botAddress);
-        const points = pointsBigNumber.toNumber();
-        const name = await botContract.getName();
-        
-        botsData[botAddress] = {
-            botAddress,
-            botContract,
-            points,
-            name,
-        };
+        for (let j = 0; j < botAddresses.length; j++) {
+            if (i === j) {
+                continue;
+            }
+            
+            const playsForBot1vsBot2 = [];
+            playsForBot1.push(playsForBot1vsBot2);
+            
+            const bot2Data = botsDataArr[j];
+            
+            for (let turn = 0; turn < roundLength; turn++) {
+                const play = await challengeContract.plays(bot1Data.botAddress, bot2Data.botAddress, turn);
+                console.log(play, i, j, turn)
+                playsForBot1vsBot2.push(play);
+            }
+        }
     }
+    
+    return plays;
 }
 
+const matrix = await getPlaysMatrixForChallenge(challengeContract, botsDataArr);
+
+
 debugger
-displayGameMatrixForChallenge(challengeContract)
