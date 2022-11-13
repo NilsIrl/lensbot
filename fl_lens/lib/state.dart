@@ -1,9 +1,11 @@
 import 'package:fl_lens/abis.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web3/flutter_web3.dart';
+import 'networking.dart';
 
 class State with ChangeNotifier {
-  static const lensbotAddr = "0xEfB7C195AAcB0083e2a8fe60f8C5104dC5fC6BB2";
+  static const lensbotAddr =
+      "0xEfB7C195AAcB0083e2a8fe60f8C5104dC5fC6BB2"; // TODO remember to update this
 
   State() : super();
 
@@ -12,18 +14,10 @@ class State with ChangeNotifier {
   late Web3Provider provider;
 
   void signIn() async {
-    if (ethereum != null) {
-      try {
-        // Prompt user to connect to the provider, i.e. confirm the connection modal
-        final accs = await ethereum!
-            .requestAccount(); // Get all accounts in node disposal
-        acc = accs[0]; // Get the first account
-        provider = Web3Provider(ethereum!);
-      } on EthereumUserRejected {
-        print('User rejected the modal');
-      }
-      notifyListeners();
-    }
+    print("Logging works");
+    print(await Networking.getLoginToken(
+        "0x7b6181AC51C0BCEeAcC0e9eB0b718dc6cc4BA70D"));
+    print("Finished");
   }
 
   dynamic getContract() {

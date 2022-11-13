@@ -2,7 +2,6 @@ import 'state.dart' as s;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-/*
 class ChallengePage extends StatelessWidget {
   const ChallengePage({super.key});
 
@@ -12,10 +11,9 @@ class ChallengePage extends StatelessWidget {
 
     final challenges = state.getChallengeOwnderIDs();
 
-    return const ListView.builder(itemBuilder: );
+    return const SizedBox.shrink();
   }
 }
-*/
 
 class Challenge {
   final int botCount;
