@@ -87,6 +87,7 @@ abstract contract Bot {
         c.register();
     }
 
+    // keep casing like that
     function getOwnerprofile() view external returns (uint256) {
         return ownerprofile;
     }
