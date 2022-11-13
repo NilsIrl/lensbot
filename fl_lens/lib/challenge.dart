@@ -28,12 +28,12 @@ class ChallengesPage extends StatefulWidget {
 class _ChallengesPageState extends State<ChallengesPage> {
   void f(BuildContext context) async {
     final s.State state = context.watch<s.State>();
-    final c = state.getLensBotContract();
+    final c = state.getlensBotABIContract();
     final BigInt count = await c.call<BigInt>("getChallengesCount");
 
     for (int i = 0; i < count.toInt(); i++) {
       final challengeAddr = await c.call<String>("challenges", [i]);
-      final contract = Contract(challengeAddr, challenge, provider);
+      final contract = Contract(challengeAddr, challengeABI, provider);
       final ownerId = await contract.call<BigInt>("getOwnerprofile");
       final name = await contract.call<String>("getName");
       ownerIds.add(ownerId);
@@ -84,8 +84,10 @@ class ChallengePage extends StatefulWidget {
 
 class Bot {
   final String name;
+  final String addr;
+  final BigInt points;
 
-  Bot(this.name);
+  Bot({required this.name, required this.addr, required this.points});
 }
 
 class _ChallengePageState extends State<ChallengePage> {
@@ -99,13 +101,22 @@ class _ChallengePageState extends State<ChallengePage> {
     final ownerId = await contract.call<BigInt>("getOwnerprofile");
     final name = await contract.call<String>("getName");
     final botCount = await contract.call<BigInt>("getBotCount");
-
+    var bots = <Bot>[];
     for (int i = 0; i < botCount.toInt(); i++) {
-      final botAddr = await contract.call<String>("bots", [i]);
-      final botContract = Contract(botAddr, bot, provider);
+      final botAddr = await contract.call<String>("getLeaderboardAt", [i]);
+      final botContract = Contract(botAddr, BotABI, provider);
       final botName = await botContract.call<String>("getName");
+      final points = await contract.call<BigInt>("getPoints", [botAddr]);
+      final bot = Bot(name: botName, addr: botAddr, points: points);
+      bots.add(bot);
     }
-
+    bots.sort((a, b) => a.points.compareTo(b.points));
+    challenge = Challenge(
+      id: id,
+      name: name,
+      ownerId: ownerId,
+      bots: bots,
+    );
     setState(() {});
   }
 
@@ -121,10 +132,13 @@ class _ChallengePageState extends State<ChallengePage> {
     if (challenge != null)
     {return Column(
       children: [
-        Text("Challenge", style: const TextStyle(fontSize: 20),),
+        const Text("Challenge", style: const TextStyle(fontSize: 20),),
         Text("Name: ${challenge?.name}"),
         ProfileFutureCard(profile: Networking.getProfileFromId("0x" + challenge!.ownerId.toRadixString(16))),
-
+        Expanded(child: ListView.builder(itemBuilder: (context, index) {
+          final bot = challenge!.bots[index];
+          return Text("${bot.name} ${bot.points}");
+        }, itemCount: challenge!.bots.length,))
       ],
     );}
     else {return const Center(child: CircularProgressIndicator());}

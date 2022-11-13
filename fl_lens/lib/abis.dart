@@ -1,6 +1,6 @@
 import 'package:flutter_web3/ethers.dart';
 
-final lensbot = Interface("""
+final lensBotABI = Interface("""
 [
     {
         "inputs": [
@@ -43,7 +43,7 @@ final lensbot = Interface("""
     }
 ]
 """);
-final challenge = Interface("""
+final challengeABI = Interface("""
 [
     {
         "inputs": [],
@@ -131,7 +131,7 @@ final challenge = Interface("""
     }
 ]
 """);
-final bot = Interface("""[
+final BotABI = Interface("""[
     {
         "inputs": [],
         "name": "getName",
