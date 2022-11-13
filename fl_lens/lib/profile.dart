@@ -3,6 +3,7 @@
 import 'package:fl_lens/main.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:vrouter/vrouter.dart';
 import 'networking.dart';
 part 'profile.g.dart';
@@ -174,13 +175,17 @@ class ProfileFutureCard extends StatelessWidget {
                       Column(
                         children: [
                           Text(
-                            profile.name != null ? "Author: ${profile.name}" : "Author has no name",
+                            profile.name != null
+                                ? "Author: ${profile.name}"
+                                : "Author has no name",
                             style: const TextStyle(
                               color: Colors.black,
                               fontSize: 20,
                             ),
                           ),
-                          Text(profile.bio == null ? "no bio" : "Bio: ${profile.bio}"),
+                          Text(profile.bio == null
+                              ? "no bio"
+                              : "Bio: ${profile.bio}"),
                           Text(name == null ? "no name" : "Name: $name"),
                           const Spacer(),
                           if (addr != null)
@@ -199,6 +204,13 @@ class ProfileFutureCard extends StatelessWidget {
                         height: 200,
                         width: 200,
                       ),
+                      IconButton(
+                        icon: const Icon(Icons.share),
+                        onPressed: () {
+                          Share.share(
+                              "Check out this profile: ${profile.name} ${profile.bio} ${profile.picture?.original?.url}");
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -208,5 +220,14 @@ class ProfileFutureCard extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
         });
+  }
+}
+
+
+class Share {
+  /// Share text content.
+  static Future<void> share(String text, {String? subject}) async {
+    // Share things
+    await launchUrlString("https://testnet.lenster.xyz");
   }
 }

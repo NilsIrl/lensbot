@@ -19,6 +19,7 @@ class _BotPageState extends State<BotPage> {
   Challenge? challenge;
   Bot? bot;
   List<List<List<bool>>>? playsArray;
+  int? rank;
 
   void f(BuildContext context, String id, String botId) async {
     final s.State state = context.watch<s.State>();
@@ -26,7 +27,7 @@ class _BotPageState extends State<BotPage> {
     final ownerId = await contract.call<BigInt>("getOwnerprofile");
     final name = await contract.call<String>("getName");
     final botCount = await contract.call<BigInt>("getBotCount");
-    final roundLength = await contract.call<BigInt>("getRoundLength");
+    final BigInt roundLength = await contract.call<BigInt>("getRoundLength");
     var bots = <Bot>[];
     for (int i = 0; i < botCount.toInt(); i++) {
       final botAddr = await contract.call<String>("getLeaderboardAt", [i]);
@@ -44,37 +45,21 @@ class _BotPageState extends State<BotPage> {
         bots: bots,
         roundLength: roundLength);
     bot = bots.firstWhere((element) => element.addr == botId);
-    final plays = <List<List<bool>>>[];
-
+    rank = bots.indexOf(bot!);
+    final games = <List<List<bool>>>[];
     for (int i = 0; i < bots.length; i++) {
-      final boti = bots[i];
-
-      final playsForBoti = <List<bool>>[];
-
-      for (int j = 0; j < bots.length; j++) {
-        final botj = bots[j];
-        if (i == j) {
-          continue;
-        }
-
-        final playsForBotivsBotj = <bool>[];
-
-        for (int turn = 0; turn < roundLength.toInt(); turn++) {
-          final play =
-              await contract.call<bool>("plays", [boti.addr, botj.addr, turn]);
-          final play2 =
-              await contract.call<bool>("plays", [botj.addr, boti.addr, turn]);
-          playsForBotivsBotj.add(play);
-          playsForBotivsBotj.add(play2);
-        }
-
-        playsForBoti.add(playsForBotivsBotj);
+      if (i == rank) continue;
+      final game = <List<bool>>[];
+      for (int j = 0; j < roundLength.toInt(); j++) {
+        final round = <bool>[];
+        final p1 = await contract.call<bool>("plays", [botId, bots[i].addr, j]) as bool;
+        final p2 = await contract.call<bool>("plays", [bots[i].addr, botId, j]) as bool;
+        round.addAll([p1, p2]);
+        game.add(round);
       }
-
-      plays.add(playsForBoti);
+      games.add(game);
     }
-    playsArray = plays;
-
+    playsArray = games;
     setState(() {});
   }
 
@@ -103,8 +88,11 @@ class _BotPageState extends State<BotPage> {
                     profile: Networking.getProfileFromId(
                         "0x${challenge!.ownerId.toRadixString(16)}"))),
             Expanded(
-              child:
-                  ArrayViewer(challenge: challenge!, playsArray: playsArray!),
+              child: ArrayViewer(
+                challenge: challenge!,
+                playsArray: playsArray!,
+                rank: rank!,
+              ),
             ),
           ],
         ),
@@ -116,10 +104,15 @@ class _BotPageState extends State<BotPage> {
 }
 
 class ArrayViewer extends StatefulWidget {
-  const ArrayViewer(
-      {super.key, required this.challenge, required this.playsArray});
+  const ArrayViewer({
+    super.key,
+    required this.challenge,
+    required this.playsArray,
+    required this.rank,
+  });
 
   final Challenge challenge;
+  final int rank;
   // Game -> round -> turn
   final List<List<List<bool>>> playsArray;
 
@@ -128,78 +121,61 @@ class ArrayViewer extends StatefulWidget {
 }
 
 class _ArrayViewerState extends State<ArrayViewer> {
-  int idx = 0;
-
   @override
   Widget build(BuildContext context) {
     final bots = widget.challenge.bots;
-
-    return Column(
-      children: [
-        Text("Bot: ${widget.challenge.bots[idx].name}"),
-        Expanded(
-          child: Center(
-            child: ListView.builder(
-              itemCount: widget.challenge.bots.length,
-              itemBuilder: (context, i) {
-                final game = widget.playsArray[idx];
-                final bot = widget.challenge.bots[i > idx ? i - 1 : i];
-                return Column(
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: ListView.builder(
+        itemBuilder: (context, index) {
+          final game = widget.playsArray[index];
+          final bot = bots[index > widget.rank ? index - 1 : index];
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(bot.name),
+              SizedBox(
+                height: 100,
+                width: double.infinity,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: game
-                      .map((e) => Expanded(
-                        child: Row(
-                              children: e
-                                  .map(
-                                    (e) => SizedBox(
-                                      height: 40,
-                                      width: 40,
-                                      child: Column(
-                                        children: [
-                                          Expanded(
-                                            child: Container(
-                                              color: e ? Colors.red : Colors.green,
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Container(
-                                              color: e ? Colors.red : Colors.green,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
+                      .map(
+                        (e) => Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.all(10),
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: e[0] ? Colors.green : Colors.red,
+                              ),
                             ),
-                      ))
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: e[1] ? Colors.green : Colors.red,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
                       .toList(),
-                );
-              },
-            ),
-          ),
-        ),
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     ElevatedButton(
-        //       onPressed: () {
-        //         setState(() {
-        //           idx = (idx - 1) % widget.challenge.bots.length;
-        //         });
-        //       },
-        //       child: const Text("Prev"),
-        //     ),
-        //     ElevatedButton(
-        //       onPressed: () {
-        //         setState(() {
-        //           idx = (idx + 1) % widget.challenge.bots.length;
-        //         });
-        //       },
-        //       child: const Text("Next"),
-        //     ),
-        //   ],
-        // ),
-      ],
+                ),
+              ),
+            ],
+          );
+        },
+        itemCount: widget.playsArray.length,
+      ),
     );
   }
 }

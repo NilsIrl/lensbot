@@ -102,7 +102,6 @@ class _ChallengePageState extends State<ChallengePage> {
 
   Challenge? challenge;
 
-
   void f(BuildContext context, String id) async {
     final s.State state = context.watch<s.State>();
     final contract = state.getChallengeContract(id);
@@ -121,21 +120,17 @@ class _ChallengePageState extends State<ChallengePage> {
     }
     bots.sort((a, b) => a.points.compareTo(b.points));
     challenge = Challenge(
-      id: id,
-      name: name,
-      ownerId: ownerId,
-      bots: bots,
-      roundLength: roundLength
-    );
-    
-    
+        id: id,
+        name: name,
+        ownerId: ownerId,
+        bots: bots,
+        roundLength: roundLength);
 
     setState(() {});
   }
 
   @override
   void didChangeDependencies() {
-    print("change deps");
     final id = VRouter.of(context).pathParameters["id"];
     f(context, id!);
     super.didChangeDependencies();
@@ -172,13 +167,18 @@ class _ChallengePageState extends State<ChallengePage> {
                           fontSize: 18,
                         ),
                       ),
+                      IconButton(
+                        icon: const Icon(Icons.share),
+                        onPressed: () async {
+                          await Share.share("Check out this bot! ${bot.addr}");
+                        },
+                      ),
                     ],
                   ),
                 ),
               ),
             ),
             onTap: () {
-              print("tapppppp");
               VRouter.of(context).to(
                 "/challenge/${VRouter.of(context).pathParameters["id"]}/bot/${bot.addr}",
               );

@@ -161,7 +161,7 @@ class HomePage extends StatelessWidget {
             ),
           ),
           const Text(
-            "To get started, sign in with your Google account.",
+            "To get started, sign in with your Lens account.",
             style: TextStyle(
               fontSize: 18,
             ),
