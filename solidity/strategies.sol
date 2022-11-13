@@ -3,7 +3,7 @@ pragma solidity ^0.8.17;
 import "./dilemma.sol";
 
 contract AlwaysCooperate is Bot {
-    constructor(uint256 owner_profile) Bot (owner_profile) {}
+    constructor(uint256 owner_profile, string memory name) Bot (owner_profile, name) {}
     
     function play(
     address opponent,
@@ -15,7 +15,7 @@ contract AlwaysCooperate is Bot {
 
 
 contract AlwaysDefect is Bot {
-    constructor(uint256 owner_profile) Bot (owner_profile) {}
+    constructor(uint256 owner_profile, string memory name) Bot (owner_profile, name) {}
 
     function play(
         address opponent,
@@ -26,7 +26,7 @@ contract AlwaysDefect is Bot {
 }
 
 contract Toggle is Bot {
-    constructor(uint256 owner_profile) Bot (owner_profile) {}
+    constructor(uint256 owner_profile, string memory name) Bot (owner_profile, name) {}
 
     function play(
         address opponent,
@@ -37,7 +37,7 @@ contract Toggle is Bot {
 }
 
 contract TitForTat is Bot {
-    constructor(uint256 owner_profile) Bot (owner_profile) {}
+    constructor(uint256 owner_profile, string memory name) Bot (owner_profile, name) {}
 
     function play(
         address opponent,
