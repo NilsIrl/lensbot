@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
                 widget: const GamePage(),
               ),
               VWidget(
-                path: "/challenges",
+                path: "/challenges/",
                 widget: const ChallengePage(),
               ),
             ],
@@ -86,13 +86,22 @@ class PageOutline extends StatelessWidget {
         actions: [
           Row(
             children: [
+              const SiginInButton(),
+              const SizedBox(width: 10),
               ElevatedButton(
                 onPressed: () {
-                  context.read<s.State>().signIn();
+                  VRouter.of(context).to("/challenges/");
                 },
-                child: const Text("Sign In"),
+                child: const Text("Challenges"),
               ),
               const SizedBox(width: 10),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     context.read<s.State>().signIn();
+              //   },
+              //   child: const Text("Sign In"),
+              // ),
+              // const SizedBox(width: 10),
             ],
           ),
         ],
@@ -101,6 +110,26 @@ class PageOutline extends StatelessWidget {
     );
   }
 }
+
+class SiginInButton extends StatelessWidget {
+  const SiginInButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final state = context.watch<s.State>();
+    if (state.acc != null) {
+      return const SizedBox.shrink();
+    } else {
+      return ElevatedButton(
+        onPressed: () {
+          context.read<s.State>().signIn();
+        },
+        child: const Text("Sign In"),
+      );
+    }
+  }
+}
+
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

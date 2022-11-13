@@ -1,45 +1,53 @@
+// SPDX-License-Identifier: UNLICENSED
+
 pragma solidity ^0.8.17;
 
 import "./dilemma.sol";
 
 contract AlwaysCooperate is Bot {
-    constructor(uint256 owner_profile) Bot (owner_profile) {}
+    constructor(uint256 owner_profile, string memory name) Bot (owner_profile, name) {}
     
-    function play(address opponent, bool[] calldata previous_plays, uint256 turn_count) external override returns (bool) {
+    function play(
+    address opponent,
+    bool[] calldata opponent_previous_plays,
+    bool[] calldata bot_previous_plays) external override returns (bool) {
         return false;
     }
 }
 
 
 contract AlwaysDefect is Bot {
-    constructor(uint256 owner_profile) Bot (owner_profile) {}
+    constructor(uint256 owner_profile, string memory name) Bot (owner_profile, name) {}
 
-    function play(address opponent, bool[] calldata previous_plays, uint256 turn_count) external override returns (bool) {
-        return true;
+    function play(
+        address opponent,
+        bool[] calldata opponent_previous_plays,
+        bool[] calldata bot_previous_plays) external override returns (bool) {
+            return true;
     }
 }
 
 contract Toggle is Bot {
-    constructor(uint256 owner_profile) Bot (owner_profile) {}
+    constructor(uint256 owner_profile, string memory name) Bot (owner_profile, name) {}
 
     function play(
         address opponent,
-        bool[] calldata previous_plays,
-        uint256 turn_count) external override returns (bool) {
-            return turn_count % 2 == 0;
+        bool[] calldata opponent_previous_plays,
+        bool[] calldata bot_previous_plays) external override returns (bool) {
+            return bot_previous_plays.length % 2 == 0;
     }
 }
 
 contract TitForTat is Bot {
-    constructor(uint256 owner_profile) Bot (owner_profile) {}
+    constructor(uint256 owner_profile, string memory name) Bot (owner_profile, name) {}
 
     function play(
         address opponent,
-        bool[] calldata previous_plays,
-        uint256 turn_count) external override returns (bool) {
-            if (previous_plays.length == 0) {
-                return false;
+        bool[] calldata opponent_previous_plays,
+        bool[] calldata bot_previous_plays) external override returns (bool) {
+            if (opponent_previous_plays.length == 0) {
+                return true;
             }
-            return previous_plays[previous_plays.length - 1];
+            return opponent_previous_plays[opponent_previous_plays.length - 1];
     }
 }

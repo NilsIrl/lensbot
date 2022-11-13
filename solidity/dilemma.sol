@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: UNLICENSED
+
 pragma solidity ^0.8.17;
 
 import "./code.sol";
@@ -7,15 +9,10 @@ contract Dilemma is Challenge {
     mapping (address => mapping (address => bool[])) public plays;
     address[] bots;
     LensBot lensbot;
-    uint256 ownerprofile;
 
-    constructor(address lensbot_addr, uint256 owner_profile) {
-        lensbot = LensBot(lensbot_addr);
-        lensbot.register();
-        ownerprofile = owner_profile;
-    }
+    constructor(address lensbot_addr, uint256 owner_profile, string memory name_local) Challenge(lensbot_addr, owner_profile, name_local) {} 
 
-    function register() public {
+    function register() override public {
         Bot botb = Bot(msg.sender);
 
         for (uint256 i = 0; i < bots.length; ++i) {
@@ -25,13 +22,16 @@ contract Dilemma is Challenge {
                 bool bota_play = bota.play(
                     msg.sender,
                     plays[msg.sender][address(bota)],
-                    turn
+                    plays[address(bota)][msg.sender]
                 );
                 bool botb_play = botb.play(
                     address(bota),
                     plays[address(bota)][msg.sender],
-                    turn
+                    plays[msg.sender][address(bota)]
                 );
+
+                plays[address(bota)][msg.sender].push(bota_play);
+                plays[msg.sender][address(bota)].push(botb_play);
 
                 // CC -1 -1 
                 // CD -3  0
@@ -59,29 +59,27 @@ contract Dilemma is Challenge {
         bots.push(address(botb));
     }
 
-    function getOwnerprofile() view external returns (uint256) {
-        return ownerprofile;
-    }
-
-    function getLeaderboardAt(uint256 i) view external returns (address) {
+    function getLeaderboardAt(uint256 i) view external override returns (address) {
         return bots[i];
     }
 
-    function getPoints(address bot) view external returns (int256) {
+    function getPoints(address bot) view external override returns (int256) {
         return scores[bot];
     }
 
-    function getBotCount() view external returns (uint256) {
+    function getBotCount() view external override returns (uint256) {
         return bots.length;
     }
 }
 
 
 abstract contract Bot {
-    uint256 ownerprofile;
+    uint256 private ownerprofile;
+    string private name;
 
-    constructor(uint256 owner_profile) {
+    constructor(uint256 owner_profile, string memory name_local) {
         ownerprofile = owner_profile;
+        name = name_local;
     }
 
     function register_on(address challenge_address) external {
@@ -93,7 +91,15 @@ abstract contract Bot {
         return ownerprofile;
     }
 
+    function getName() view external returns (string memory) {
+        return name;
+    }
+
     // true is defect
     // false is cooperate
-    function play(address opponent, bool[] calldata previous_plays, uint256 turn_count) external virtual returns (bool);
+    function play(
+        address opponent,
+        bool[] calldata opponent_previous_plays,
+        bool[] calldata bot_previous_plays
+    ) external virtual returns (bool);
 }

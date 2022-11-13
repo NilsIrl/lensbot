@@ -118,19 +118,36 @@ class ProfilePage extends StatelessWidget {
     final params = VRouter.of(context).pathParameters;
     final id = params['id'];
     final profile = Networking.getProfileFromId(id!);
+    return ProfileFutureCard(profile: profile);
+  }
+}
+
+class ProfileFutureCard extends StatelessWidget {
+  const ProfileFutureCard({
+    super.key,
+    required this.profile,
+  });
+
+  final Future<ProfileMetaData?>? profile;
+
+  @override
+  Widget build(BuildContext context) {
     return FutureBuilder(
       future: profile,
       builder: (context, future) {
-        print(future);
         if (future.hasData) {
           final profile = future.data;
           if (profile == null) {
             return const Text("Profile not found");
           }
-          return Column(
+          return Row(
           children: [
-            Text(profile.name ?? 'No name'),
-            Text(profile.bio ?? 'No bio'),
+            Column(
+              children: [
+                Text(profile.name ?? 'No name'),
+                Text(profile.bio ?? 'No bio'),
+              ],
+            ),
             Image.network(profile.picture?.original?.url ?? ''),
           ],
         );
