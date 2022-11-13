@@ -4,7 +4,7 @@ import 'package:flutter_web3/flutter_web3.dart';
 import 'networking.dart';
 
 class State with ChangeNotifier {
-  static const lensbotAddr = "0x5bf4dfe318901DCacFD2986BA2c8a58389AaFc86";
+  static const lensBotABIAddr = "0x5bf4dfe318901DCacFD2986BA2c8a58389AaFc86";
 
   State() : super();
 
@@ -35,13 +35,13 @@ class State with ChangeNotifier {
     }
   }
 
-  dynamic getLensBotContract() {
+  dynamic getlensBotABIContract() {
     // final provider2 = JsonRpcProvider(
     //   "https://rpc-mumbai.maticvigil.com",
     // );
     final c = Contract(
-      lensbotAddr,
-      lensbot,
+      lensBotABIAddr,
+      lensBotABI,
       provider,
     );
     return c;
@@ -50,14 +50,14 @@ class State with ChangeNotifier {
   dynamic getChallengeContract(String addr) {
     final c = Contract(
       addr,
-      challenge,
+      challengeABI,
       provider,
     );
     return c;
   }
 
   // Future<int> getChallengesCount() async {
-  //   final c = getLensBotContract();
+  //   final c = getlensBotABIContract();
   //   print(c);
   //   final res = await c.call<int>("getChallengesCount");
   //   print("challenges count: $res");
@@ -65,7 +65,7 @@ class State with ChangeNotifier {
   // }
 
   // Future<List<BigInt>> getChallengeOwnerIDs() async {
-  //   final c = getLensBotContract();
+  //   final c = getlensBotABIContract();
   //   print("before");
   //   final BigInt count = await c.call<BigInt>("getChallengesCount");
   //   print(count);
@@ -73,7 +73,7 @@ class State with ChangeNotifier {
   //   var addrs = [];
   //   for (int i = 0; i < count.toInt(); i++) {
   //     final challenge_addr = await c.call("challenges", [i]);
-  //     final contract = Contract(challenge_addr, challenge, provider);
+  //     final contract = Contract(challenge_addr, challengeABI, provider);
   //     final ownerId = await contract.call<BigInt>("getOwnerprofile");
   //     addrs.add(ownerId);
   //   }
