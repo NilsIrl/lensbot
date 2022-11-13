@@ -488,38 +488,363 @@ const botsDataArr = Object.values(botsData);
 
 
 const getPlaysMatrixForChallenge = async (challengeContract, botsDataArr) => {
-    const roundLength = await challengeContract.getRoundLength();
+    // const roundLength = await challengeContract.getRoundLength();
+    // 
+    // const plays = [];
+    // 
+    // for (let i = 0; i < botsDataArr.length; i++) {
+    //     const bot1Data = botsDataArr[i];
+    // 
+    //     const playsForBot1 = [];
+    //     plays.push(playsForBot1);
+    // 
+    //     for (let j = 0; j < botAddresses.length; j++) {
+    //         if (i === j) {
+    //             continue;
+    //         }
+    // 
+    //         const playsForBot1vsBot2 = [];
+    //         playsForBot1.push(playsForBot1vsBot2);
+    // 
+    //         const bot2Data = botsDataArr[j];
+    // 
+    //         for (let turn = 0; turn < roundLength; turn++) {
+    //             const play = await challengeContract.plays(bot1Data.botAddress, bot2Data.botAddress, turn);
+    //             // console.log(play, i, j, turn)
+    //             playsForBot1vsBot2.push(play);
+    //         }
+    //     }
+    // }
+    // 
+    // return plays;
     
-    const plays = [];
     
-    for (let i = 0; i < botsDataArr.length; i++) {
-        const bot1Data = botsDataArr[i];
-        
-        const playsForBot1 = [];
-        plays.push(playsForBot1);
-        
-        for (let j = 0; j < botAddresses.length; j++) {
-            if (i === j) {
-                continue;
-            }
-            
-            const playsForBot1vsBot2 = [];
-            playsForBot1.push(playsForBot1vsBot2);
-            
-            const bot2Data = botsDataArr[j];
-            
-            for (let turn = 0; turn < roundLength; turn++) {
-                const play = await challengeContract.plays(bot1Data.botAddress, bot2Data.botAddress, turn);
-                console.log(play, i, j, turn)
-                playsForBot1vsBot2.push(play);
-            }
-        }
-    }
-    
-    return plays;
+    // hardcode for testing
+    return [
+        [[false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]],
+        [[true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true]]
+    ];;
 }
 
 const matrix = await getPlaysMatrixForChallenge(challengeContract, botsDataArr);
 
 
-debugger
+const scoreTurn = ([a, b]) => {
+    
+    let deltaA = 0;
+    let deltaB = 0;
+    
+    // CC -1 -1 
+    // CD -3  0
+    // DD -2 -2
+    // both defect
+    if (a && b) {
+        deltaA -= 2;
+        deltaB -= 2;
+        // bota defect
+        // botb cooperate
+    } else if (a && (!b)) {
+        deltaB -= 3;
+        // bota cooperate
+        // botb defect
+    } else if ((!a) && b) {
+        deltaA -= 3;
+        // both cooperate
+    } else {
+        deltaA -= 1;
+        deltaB -= 1;
+    }
+    
+    return [deltaA, deltaB];
+}
+
+const scoreRound = round => {
+    let totalA = 0;
+    let totalB = 0;
+    
+    for (let i = 0; i < round.turns.length; i++) {
+        const turn = round.turns[i];
+        
+        const [deltaA, deltaB] = scoreTurn(turn);
+        
+        totalA += deltaA;
+        totalB += deltaB;
+    }
+    
+    return [totalA, totalB];
+}
+
+
+console.log(matrix)
+
+const getShortTextForDefectCooperateBool = b => b ? 'D' : 'C';
+
+// const renderMatrix = (botsDataArr, matrix) => {
+// 
+//     const container = document.createElement('div');
+//     const elements = [];
+// 
+//     const addElement = text => {
+//         const element = document.createElement('div');
+//         element.innerText = text;
+//         elements.push(element);
+//     }
+// 
+//     debugger;
+// 
+//     for (let i = 0; i < matrix.length; i++) {
+// 
+//         addElement(botsDataArr[i].name);
+// 
+// 
+//         for (let j = 0; j < matrix[0].length; j++) {
+//             addElement(getShortTextForDefectCooperateBool(matrix[i][j]));
+//         }
+//     }
+// 
+//     elements.forEach(element => container.append(element));
+// 
+//     return container;
+// 
+// }
+
+
+// const matrix3ToScoresMatrix = matrix => {
+// 
+// }
+
+
+// const renderMatrix = (botsDataArr, matrix) => {
+// 
+//     const container = document.createElement('div');
+//     const elements = [];
+// 
+//     const addElement = text => {
+//         const element = document.createElement('div');
+//         element.innerText = text;
+//         elements.push(element);
+//     }
+// 
+//     debugger;
+// 
+//     for (let i = 0; i < matrix.length; i++) {
+// 
+//         addElement(botsDataArr[i].name);
+// 
+// 
+//         for (let j = 0; j < matrix[0].length; j++) {
+//             addElement(getShortTextForDefectCooperateBool(matrix[i][j]));
+//         }
+//     }
+// 
+//     elements.forEach(element => container.append(element));
+// 
+//     return container;
+// 
+// }
+
+// const container = renderMatrix(botsDataArr, matrix);
+// document.body.append(container);
+
+
+// 
+// const getRounds = async (challengeContract, botsDataArr) => {
+//     const roundLength = await challengeContract.getRoundLength();
+// 
+//     const rounds = [];
+// 
+//     for (let i = 0; i < botsDataArr.length; i++) {
+//         const bot1Data = botsDataArr[i];
+// 
+//         const roundsForBot1 = [];
+//         rounds.push(roundsForBot1);
+// 
+//         for (let j = 0; j < botAddresses.length; j++) {
+//             if (i === j) {
+//                 continue;
+//             }
+// 
+//             const bot2Data = botsDataArr[j];
+// 
+//             const roundForBot1vsBot2 = {
+//                 turns: [],
+//             };
+//             roundsForBot1.push(roundForBot1vsBot2);
+// 
+//             for (let turnIndex = 0; turnIndex < roundLength; turnIndex++) {
+//                 const play1 = await challengeContract.plays(bot1Data.botAddress, bot2Data.botAddress, turnIndex);
+//                 const play2 = await challengeContract.plays(bot2Data.botAddress, bot1Data.botAddress, turnIndex);
+// 
+//                 const turn = [play1, play2];
+// 
+//                 roundForBot1vsBot2.turns.push(turn);
+//             }
+// 
+//             roundForBot1vsBot2.score = scoreRound(roundForBot1vsBot2);
+// 
+//         }
+//     }
+// 
+//     return rounds;
+// }
+// 
+// 
+// const rounds = await getRounds(challengeContract, botsDataArr);
+// 
+// 
+// const renderRoundsGrid = (challengeContract, botsDataArr, rounds) => {
+// 
+// 
+// 
+//     const container = document.createElement('div');
+//     const elements = [];
+// 
+//     const addElement = text => {
+//         const element = document.createElement('div');
+//         element.innerText = text;
+//         elements.push(element);
+//     }
+// 
+// 
+//     for (let i = 0; i < botsDataArr.length; i++) {
+//         const bot1Data = botsDataArr[i];
+// 
+//         addElement(bot1Data.name);
+// 
+// 
+//         for (let j = 0; j < botAddresses.length; j++) {
+//             if (i === j) {
+//                 continue;
+//             }
+// 
+//             const bot2Data = botsDataArr[j];
+// 
+//             const roundForBot1vsBot2 = rounds[i][j];
+//             debugger
+// 
+//             addElement(roundForBot1vsBot2.score);
+// 
+//         }
+//     }
+// 
+//     elements.forEach(element => container.append(element));
+// 
+//     return container;
+// 
+// 
+// }
+// 
+// const container = renderRoundsGrid(challengeContract, botsDataArr, rounds);
+// document.body.append(container);
+
+
+
+
+
+
+
+const getRoundsMap2 = async (challengeContract, botsDataArr) => {
+    const roundLength = await challengeContract.getRoundLength();
+    
+    const roundsMap2 = {};
+    
+    for (let i = 0; i < botsDataArr.length; i++) {
+        const bot1Data = botsDataArr[i];
+    
+        const roundsForBot1 = {};
+        roundsMap2[bot1Data.botAddress] = roundsForBot1;
+    
+        for (let j = 0; j < botAddresses.length; j++) {
+            if (i === j) {
+                continue;
+            }
+            
+            const bot2Data = botsDataArr[j];
+            
+            
+            const roundForBot1vsBot2 = {
+                turns: [],
+            };
+            roundsForBot1[bot2Data.botAddress] = roundForBot1vsBot2;
+            
+    
+            for (let turnIndex = 0; turnIndex < roundLength; turnIndex++) {
+                const play1 = await challengeContract.plays(bot1Data.botAddress, bot2Data.botAddress, turnIndex);
+                const play2 = await challengeContract.plays(bot2Data.botAddress, bot1Data.botAddress, turnIndex);
+                
+                const turn = [play1, play2];
+                
+                roundForBot1vsBot2.turns.push(turn);
+            }
+            
+            roundForBot1vsBot2.score = scoreRound(roundForBot1vsBot2);
+            
+        }
+    }
+    
+    return roundsMap2;
+}
+
+
+const roundsMap2 = await getRoundsMap2(challengeContract, botsDataArr);
+
+console.log(roundsMap2)
+
+
+const renderRoundsMap2 = async (challengeContract, botsDataArr, roundsMap2) => {
+    
+    const container = document.createElement('div');
+    const elements = [];
+
+    const addElement = text => {
+        const element = document.createElement('div');
+        element.innerText = text;
+        elements.push(element);
+    }
+    
+    addElement(''); // gap
+    for (let i = 0; i < botsDataArr.length; i++) {
+        const bot1Data = botsDataArr[i];
+        addElement(bot1Data.name);
+    }
+    
+    for (let i = 0; i < botsDataArr.length; i++) {
+        const bot1Data = botsDataArr[i];
+        
+        addElement(bot1Data.name);
+        
+        const roundsForBot1 = roundsMap2[bot1Data.botAddress];
+    
+    
+        for (let j = 0; j < botAddresses.length; j++) {
+            if (i === j) {
+                // continue;
+                addElement(''); // gap
+                continue;
+            }
+            
+            const bot2Data = botsDataArr[j];
+            const roundForBot1vsBot2 = roundsForBot1[bot2Data.botAddress];
+            
+            addElement(roundForBot1vsBot2.score[0]);
+            
+        }
+    }
+    
+    elements.forEach(element => container.append(element));
+    
+    // display: grid;
+    // grid-template-columns: 1fr 1fr 1fr 1fr;
+    // grid-gap: 5px;
+    
+    container.style.display = 'grid';
+    container.style.gridTemplateColumns =  Array(botsDataArr.length + 1).fill().map(() => '1fr').join(' ');
+    
+    
+    return container;
+}
+
+
+
+const container = await renderRoundsMap2(challengeContract, botsDataArr, roundsMap2);
+document.body.append(container);
