@@ -155,13 +155,18 @@ class ProfileFutureCard extends StatelessWidget {
             if (profile == null) {
               return const Text("Profile not found");
             }
+            String photoUrl = profile.picture?.original?.url ?? '';
+            if (photoUrl.startsWith("ipfs://")) {
+              photoUrl = photoUrl.replaceFirst("ipfs://", "https://ipfs.io/ipfs/");
+            }
             return DefaultTextStyle(
               style: const TextStyle(
                 color: Colors.green,
                 fontSize: 20,
               ),
               child: InkWell(
-                onTap: onClick ?? () => VRouter.of(context).to("/profile/$addr"),
+                onTap:
+                    onClick ?? () => VRouter.of(context).to("/profile/$addr"),
                 child: Container(
                   decoration: BoxDecoration(
                     color: lime,
@@ -200,7 +205,7 @@ class ProfileFutureCard extends StatelessWidget {
                       ),
                       const Spacer(),
                       Image.network(
-                        profile.picture?.original?.url ?? '',
+                        photoUrl,
                         height: 200,
                         width: 200,
                       ),
@@ -222,7 +227,6 @@ class ProfileFutureCard extends StatelessWidget {
         });
   }
 }
-
 
 class Share {
   /// Share text content.

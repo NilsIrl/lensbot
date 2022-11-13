@@ -138,8 +138,10 @@ class _ArrayViewerState extends State<ArrayViewer> {
       padding: const EdgeInsets.all(16.0),
       child: ListView.builder(
         itemBuilder: (context, index) {
+          if (index == widget.rank) return const SizedBox.shrink();
           final game = widget.playsArray[index];
-          final bot = bots[index > widget.rank ? index - 1 : index];
+          final bot = bots[index];
+          // print(bot);
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
