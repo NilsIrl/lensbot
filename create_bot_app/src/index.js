@@ -47,7 +47,7 @@ let editor = new EditorView({
         challenge_select.appendChild(option);
     }
 
-    profiles_ = await client.query( {query: profiles, variables: { ownedBy: address }});
+    let profiles_ = await client.query( {query: profiles, variables: { ownedBy: address }});
     for (const profile of profiles_.data.profiles.items) {
         let option = document.createElement('option');
         option.value = profile.id;
