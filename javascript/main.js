@@ -95,77 +95,177 @@ const lensBotABI = [
 ];
 
 const challengeABI = [
-    {
-        "inputs": [],
-        "name": "getBotCount",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "getLeaderboardAt",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "getOwnerprofile",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "name": "getPoints",
-        "outputs": [
-            {
-                "internalType": "int256",
-                "name": "",
-                "type": "int256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "register",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    }
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "lensbot_addr",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "owner_profile",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "name_local",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_roundLength",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [],
+		"name": "getBotCount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "i",
+				"type": "uint256"
+			}
+		],
+		"name": "getLeaderboardAt",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getName",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getOwnerprofile",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "bot",
+				"type": "address"
+			}
+		],
+		"name": "getPoints",
+		"outputs": [
+			{
+				"internalType": "int256",
+				"name": "",
+				"type": "int256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getRoundLength",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "plays",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "register",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "scores",
+		"outputs": [
+			{
+				"internalType": "int256",
+				"name": "",
+				"type": "int256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
 ];
 
 const botABI = [
@@ -243,7 +343,7 @@ const botABI = [
 
 
 // https://docs.ethers.io/v5/api/contract/contract/
-const lensBotContract = new ethers.Contract('0x5bf4dfe318901DCacFD2986BA2c8a58389AaFc86', lensBotABI, provider);
+const lensBotContract = new ethers.Contract('0x3F359353554fe20a199BB803F87454075dEc8Cca', lensBotABI, provider);
 
 // debugger
 
@@ -279,7 +379,7 @@ const getChallengesAddress = async () => {
 const challengesAddresses = await getChallengesAddress();
 
 const challengeContracts = [];
-const challengeContract = new ethers.Contract(challengesAddresses[1], challengeABI, provider);
+const challengeContract = new ethers.Contract(challengesAddresses[0], challengeABI, provider);
 challengeContracts.push(challengeContract);
 
 // debugger
@@ -363,20 +463,63 @@ const getDataForAllBotsInChallenge = async (challengeContract, botAddresses) => 
 // debugger
 
 
+
+
+
+
 const botsData = await getDataForAllBotsInChallenge(challengeContract, botAddresses);
 
 console.log(botsData);
 
 
 const botsDataArr = Object.values(botsData);
+// 
+// const challengeLeaderboardAsText = botsDataArr
+//     .sort((a,b) => b.points - a.points)
+//     .map(({botAddress, points, name}) => `(${botAddress}) ${name} : ${points}`).join('\n')
+// 
+// 
+// const leaderboard = document.createElement('div');
+// leaderboard.style.fontFamily = 'monospace';
+// leaderboard.style.whitespace = 'pre';
+// leaderboard.innerText = challengeLeaderboardAsText;
+// document.body.append(leaderboard);
 
-const challengeLeaderboardAsText = botsDataArr
-    .sort((a,b) => b.points - a.points)
-    .map(({botAddress, points, name}) => `(${botAddress}) ${name} : ${points}`).join('\n')
 
 
-const leaderboard = document.createElement('div');
-leaderboard.style.fontFamily = 'monospace';
-leaderboard.style.whitespace = 'pre';
-leaderboard.innerText = challengeLeaderboardAsText;
-document.body.append(leaderboard);
+const getPlaysMatrixForChallenge = async (challengeContract, botsDataArr) => {
+    const roundLength = await challengeContract.getRoundLength();
+    
+    const plays = [];
+    
+    for (let i = 0; i < botsDataArr.length; i++) {
+        const bot1Data = botsDataArr[i];
+        
+        const playsForBot1 = [];
+        plays.push(playsForBot1);
+        
+        for (let j = 0; j < botAddresses.length; j++) {
+            if (i === j) {
+                continue;
+            }
+            
+            const playsForBot1vsBot2 = [];
+            playsForBot1.push(playsForBot1vsBot2);
+            
+            const bot2Data = botsDataArr[j];
+            
+            for (let turn = 0; turn < roundLength; turn++) {
+                const play = await challengeContract.plays(bot1Data.botAddress, bot2Data.botAddress, turn);
+                console.log(play, i, j, turn)
+                playsForBot1vsBot2.push(play);
+            }
+        }
+    }
+    
+    return plays;
+}
+
+const matrix = await getPlaysMatrixForChallenge(challengeContract, botsDataArr);
+
+
+debugger

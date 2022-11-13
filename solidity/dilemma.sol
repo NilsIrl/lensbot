@@ -9,8 +9,17 @@ contract Dilemma is Challenge {
     mapping (address => mapping (address => bool[])) public plays;
     address[] bots;
     LensBot lensbot;
+    uint256 roundLength;
 
-    constructor(address lensbot_addr, uint256 owner_profile, string memory name_local) Challenge(lensbot_addr, owner_profile, name_local) {} 
+    constructor(
+        address lensbot_addr,
+        uint256 owner_profile,
+        string memory name_local,
+        uint256 _roundLength) Challenge(lensbot_addr, owner_profile, name_local) {
+
+            roundLength = _roundLength;
+
+    } 
 
     function register() override public {
         Bot botb = Bot(msg.sender);
@@ -18,7 +27,7 @@ contract Dilemma is Challenge {
         for (uint256 i = 0; i < bots.length; ++i) {
             Bot bota = Bot(bots[i]);
 
-            for (uint256 turn = 0; turn < 5; ++turn) {
+            for (uint256 turn = 0; turn < roundLength; ++turn) {
                 bool bota_play = bota.play(
                     msg.sender,
                     plays[msg.sender][address(bota)],
@@ -69,6 +78,10 @@ contract Dilemma is Challenge {
 
     function getBotCount() view external override returns (uint256) {
         return bots.length;
+    }
+
+    function getRoundLength() view external returns (uint256) {
+        return roundLength;
     }
 }
 
