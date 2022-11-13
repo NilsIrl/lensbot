@@ -220,7 +220,8 @@ final challengeABI = Interface("""
 	}
 ]
 """);
-final botABI = Interface("""[
+final botABI = Interface("""
+[
     {
         "inputs": [],
         "name": "getName",
@@ -289,4 +290,5 @@ final botABI = Interface("""[
         "stateMutability": "nonpayable",
         "type": "function"
     }
-]""");
+]
+""");
