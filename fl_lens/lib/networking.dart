@@ -7,12 +7,64 @@ class Networking {
     return [];
   }
 
+  static Future<String> getLoginToken(String addr) {
+    final link = HttpLink(apilink);
+    final client = GraphQLClient(
+      cache: GraphQLCache(),
+      link: link,
+    );
+
+    final query = gql('''
+      query Challenge {
+        challenge(request: { address: "$addr" }) {
+          text
+        }
+      }
+    ''');
+
+    final result = client.query(QueryOptions(
+      document: query,
+      variables: <String, dynamic>{
+        'addr': addr,
+      },
+    ));
+    return result.then((value) => value.data!["challenge"]["text"]);
+  }
+
+  static Future<String> getJWT(addr, sig) {
+    final link = HttpLink(apilink);
+    final client = GraphQLClient(
+      cache: GraphQLCache(),
+      link: link,
+    );
+
+    final query = gql('''
+    mutation Authenticate {
+  authenticate(request: {
+    address: "$addr",
+    signature: "$sig"
+  }) {
+    accessToken
+    refreshToken
+  }
+}
+  ''');
+
+    final result = client.query(
+      QueryOptions(document: query),
+    );
+
+    return result.then((value) => value.data!["authenticate"][
+        "accessToken"]); // we could also return address token if we want sessions to last for more than 30 mins
+  }
+
   static Future<ProfileMetaData?>? getProfileFromId(String id) {
     final link = HttpLink(apilink);
     final client = GraphQLClient(
       cache: GraphQLCache(),
       link: link,
     );
+
     final query = gql('''
       query Profile {
   profile(request: { profileId: "$id" }) {

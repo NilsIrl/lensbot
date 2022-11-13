@@ -1,6 +1,7 @@
 import 'package:fl_lens/abis.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web3/flutter_web3.dart';
+import 'networking.dart';
 
 class State with ChangeNotifier {
   static const lensbotAddr = "0x5bf4dfe318901DCacFD2986BA2c8a58389AaFc86";
@@ -17,10 +18,15 @@ class State with ChangeNotifier {
       try {
         // Prompt user to connect to the provider, i.e. confirm the connection modal
         final accs = await ethereum!
-           .requestAccount(); // Get all accounts in node disposal
+            .requestAccount(); // Get all accounts in node disposal
         acc = accs[0]; // Get the first account
         provider = Web3Provider(ethereum!);
 
+        final token = await Networking.getLoginToken(acc!);
+        final signer = provider.getSigner();
+        final signedToken = await signer.signMessage(token);
+        final jwt = await Networking.getJWT(acc, signedToken);
+        print(jwt);
       } on EthereumUserRejected {
         print('User rejected the modal');
       }
