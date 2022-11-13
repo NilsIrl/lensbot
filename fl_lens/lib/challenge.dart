@@ -8,6 +8,16 @@ import 'state.dart' as s;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+class Challenge {
+  const Challenge(
+      {required this.id, required this.name, required this.ownerId, required this.bots,});
+
+  final String id;
+  final String name;
+  final BigInt ownerId;
+  final List<Bot> bots;
+}
+
 class ChallengesPage extends StatefulWidget {
   const ChallengesPage({super.key});
 
@@ -57,13 +67,13 @@ class _ChallengesPageState extends State<ChallengesPage> {
           addr: challengeAddrs[index],
           name: names[index],
           onClick: () => VRouter.of(context).to(
-            "/challenge/${challengeAddrs[index]}",          ),
+            "/challenge/${challengeAddrs[index]}",
+          ),
         );
       },
     );
   }
 }
-
 
 class ChallengePage extends StatefulWidget {
   const ChallengePage({super.key});
@@ -72,41 +82,51 @@ class ChallengePage extends StatefulWidget {
   State<ChallengePage> createState() => _ChallengePageState();
 }
 
+class Bot {
+  final String name;
+
+  Bot(this.name);
+}
+
 class _ChallengePageState extends State<ChallengePage> {
   _ChallengePageState();
 
-  late String id; 
+  Challenge? challenge;
 
-  void f(BuildContext context) async {
+  void f(BuildContext context, String id) async {
     final s.State state = context.watch<s.State>();
-    final c = state.getChallengeContract(id);
-    final name = await c.call<String>("getName");
-    // final desc = await c.call<String>("getDescription");
-    // final BigInt count = await c.call<BigInt>("getChallengesCount");
+    final contract = state.getChallengeContract(id);
+    final ownerId = await contract.call<BigInt>("getOwnerprofile");
+    final name = await contract.call<String>("getName");
+    final botCount = await contract.call<BigInt>("getBotCount");
 
-    // for (int i = 0; i < count.toInt(); i++) {
-    //   final challengeAddr = await c.call<String>("challenges", [i]);
-    //   final contract = Contract(challengeAddr, challenge, provider);
-    //   final ownerId = await contract.call<BigInt>("getOwnerprofile");
-    //   final name = await contract.call<String>("getName");
-    //   ownerIds.add(ownerId);
-    //   challengeAddrs.add(challengeAddr);
-    //   names.add(name);
-    // }
+    for (int i = 0; i < botCount.toInt(); i++) {
+      final botAddr = await contract.call<String>("bots", [i]);
+      final botContract = Contract(botAddr, bot, provider);
+      final botName = await botContract.call<String>("getName");
+    }
+
     setState(() {});
   }
 
   @override
   void didChangeDependencies() {
-    f(context);
     final id = VRouter.of(context).pathParameters["id"];
+    f(context, id!);
     super.didChangeDependencies();
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    // final contract = Contract() ;
+    if (challenge != null)
+    {return Column(
+      children: [
+        Text("Challenge", style: const TextStyle(fontSize: 20),),
+        Text("Name: ${challenge?.name}"),
+        ProfileFutureCard(profile: Networking.getProfileFromId("0x" + challenge!.ownerId.toRadixString(16))),
 
-    return const Placeholder();
+      ],
+    );}
+    else {return const Center(child: CircularProgressIndicator());}
   }
 }
