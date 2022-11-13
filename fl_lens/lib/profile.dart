@@ -161,7 +161,7 @@ class ProfileFutureCard extends StatelessWidget {
                 fontSize: 20,
               ),
               child: InkWell(
-                onTap: onClick,
+                onTap: onClick ?? () => VRouter.of(context).to("/profile/$addr"),
                 child: Container(
                   decoration: BoxDecoration(
                     color: lime,

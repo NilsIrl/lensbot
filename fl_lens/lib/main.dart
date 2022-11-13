@@ -99,18 +99,18 @@ class PageOutline extends StatelessWidget {
               const SizedBox(width: 10),
               ElevatedButton(
                 onPressed: () {
+                  VRouter.of(context).to("/");
+                },
+                child: const Text("Home"),
+              ),
+              const SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: () {
                   VRouter.of(context).to("/challenges/");
                 },
                 child: const Text("Challenges"),
               ),
               const SizedBox(width: 10),
-              // ElevatedButton(
-              //   onPressed: () {
-              //     context.read<s.State>().signIn();
-              //   },
-              //   child: const Text("Sign In"),
-              // ),
-              // const SizedBox(width: 10),
             ],
           ),
         ],
@@ -144,38 +144,23 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          const Text(
-            "Welcome to Lens Bot!",
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const Text(
-            "Lens Bot is a bot that can play games for you!",
-            style: TextStyle(
-              fontSize: 18,
-            ),
-          ),
-          const Text(
-            "To get started, sign in with your Lens account.",
-            style: TextStyle(
-              fontSize: 18,
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              context.vRouter.to("/profile/0x5303");
-            },
-            child: const Text(
-              "Sign In",
-            ),
-          ),
-        ],
-      ),
-    );
+    return Container(
+        padding: const EdgeInsets.all(20),      
+        child: const SingleChildScrollView(
+      child: Text("""
+In The Prisoner's Dilemma, two agents are given a choice: cooperate with their partner for mutual reward, or defect for individual reward.
+
+The dilemma faced by the agents is that, regardless of what their opponent does, they are always better off defecting than cooperating. But the combined outcome when both defect is worse than if they cooperate.
+
+For a purely rational agent with no prior knowledge, always defecting is the correct choice.
+
+A variation on this is an iterated prisoner's dilemma, multiple rounds are played, and the previous responses of each agent are given as an input to the players. This vastly widens the space of feasible strategies, and can lead to some diverse and unexpected strategies performing best.
+
+We wanted to build a platform for running these kinds of challenges.
+
+Players can create strategies which contain logic to compete in challenges. Strategies are smart contracts and exist on-chain. Each turn, they are given the history of their opponent's moves, as well as their opponent's address. This allows strategies to make decisions based on their opponent's previous choices. Passing the address of their opponent allows the strategy to call them directly, and probe it with previously unseen input.
+
+Challenges are run on chain through Challenges contracts. Strategies can be registered for challenges, where they join the pool of competing strategies, and are scored and ranked by the Challenge contract."""),
+    ),);
   }
 }
