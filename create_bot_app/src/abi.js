@@ -1,6 +1,4 @@
-import 'package:flutter_web3/ethers.dart';
-
-final lensBotABI = Interface("""
+const lensbotABI = 
 [
     {
         "inputs": [
@@ -41,11 +39,9 @@ final lensBotABI = Interface("""
         "stateMutability": "nonpayable",
         "type": "function"
     }
-]
-""");
+];
 
-// actually Dilemma.abi not Challenge.abi
-final challengeABI = Interface("""
+const challengeABI = 
 [
 	{
 		"inputs": [
@@ -218,9 +214,9 @@ final challengeABI = Interface("""
 		"stateMutability": "view",
 		"type": "function"
 	}
-]
-""");
-final botABI = Interface("""
+];
+
+const botABI =
 [
     {
         "inputs": [],
@@ -290,5 +286,6 @@ final botABI = Interface("""
         "stateMutability": "nonpayable",
         "type": "function"
     }
-]
-""");
+];
+
+export { lensbotABI, challengeABI, botABI }
